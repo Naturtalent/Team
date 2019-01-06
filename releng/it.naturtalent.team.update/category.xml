@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/it.naturtalent.features.team_1.0.0.qualifier.jar" id="it.naturtalent.features.team" version="1.0.0.qualifier">
+      <category name="team"/>
+   </feature>
+   <category-def name="team" label="Team"/>
+</site>

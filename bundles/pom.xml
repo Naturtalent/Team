@@ -1,0 +1,22 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>it.naturtalent.team</groupId>
+	<artifactId>it.naturtalent.team.bundles</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>it.naturtalent.team</groupId>
+		<artifactId>it.naturtalent.team.root</artifactId>
+		<version>1.0.0-SNAPSHOT</version>		
+	</parent>
+
+	<modules>		
+		<module>it.naturtalent.team.base</module>
+		<module>it.naturtalent.team.ui</module>
+	</modules>
+
+</project>
+
+
