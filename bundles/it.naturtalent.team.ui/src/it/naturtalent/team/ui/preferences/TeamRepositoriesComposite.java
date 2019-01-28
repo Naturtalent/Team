@@ -1,6 +1,5 @@
 package it.naturtalent.team.ui.preferences;
 
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 
