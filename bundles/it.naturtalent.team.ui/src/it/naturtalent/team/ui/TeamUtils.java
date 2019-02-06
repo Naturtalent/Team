@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -1027,10 +1028,14 @@ public class TeamUtils
 	 */
 	public static File getDefaultLocalRepositoryDir()
 	{
+		String defaultReposDir = DefaultScope.INSTANCE
+				.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE)
+				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, null);
+		
 		// Verzeichnis des lokalen Repositories
 		String reposDir = InstanceScope.INSTANCE
 				.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE)
-				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, null);
+				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, defaultReposDir);
 		return new File(reposDir);	
 	}
 	
