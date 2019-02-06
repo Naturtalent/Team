@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -25,8 +27,10 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
@@ -37,6 +41,7 @@ import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RemoteAddCommand;
+import org.eclipse.jgit.api.RemoteListCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -45,6 +50,7 @@ import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
@@ -58,8 +64,10 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.merge.ResolveMerger;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
@@ -67,6 +75,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -121,22 +130,89 @@ public class TeamUtils
 		}
 	}
 
-	public static PullResult pullRepository(IProject iProject) throws Exception
+	/**
+	 * @param iProject
+	 * @return
+	 * @throws Exception
+	 */
+	public static PullResult pullRepository(IProject iProject) 
 	{
+		PullResult pullResult = null;
 		Repository localRepos = getLocalRepository();
-		if(localRepos != null)
+		if((localRepos != null) && (iProject != null))
 		{
-			Git git = new Git(localRepos);
-			
-			// PullCommand 
-			PullCommand pcmd = git.pull();
-			
-			
-			
-			PullResult pullResult = pcmd.call();
-			
-			
-			
+			String projectName = iProject.getName();
+			try (Git git = new Git(localRepos))
+			{										
+				try
+				{
+					// PullCommand	ausfuehren
+					PullCommand pcmd = git.pull();
+					pullResult = pcmd.setRemoteBranchName(projectName).call();
+					
+					// gibt es einen lokalen branch
+					if(!existLocalProjectBracnch(iProject))				
+						git.checkout().setCreateBranch(true).setName(projectName).call();
+					
+				} catch (GitAPIException e)
+				{
+					if (e instanceof CheckoutConflictException)
+					{
+						CheckoutConflictException checkoutException = (CheckoutConflictException) e;
+						List<String> conflictingPaths = checkoutException.getConflictingPaths();
+						MergeConflictDialog mergeDialog = new MergeConflictDialog(
+								Display.getDefault().getActiveShell(),conflictingPaths);
+						if (mergeDialog.open() == MergeConflictDialog.OK)
+						{
+							String [] conflictFiles = mergeDialog.getSelectedFilePath();
+							if(ArrayUtils.isNotEmpty(conflictFiles))
+							{
+								try
+								{
+									// public CheckoutCommand setStage(CheckoutCommand.Stage stage)
+									CheckoutCommand checkOutCommand = git.checkout();
+									
+									checkOutCommand.setAllPaths(false);
+									
+									for(String conflictFile : conflictFiles)								
+										checkOutCommand.addPath(conflictFile);
+									
+									checkOutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
+									.setStartPoint("origin/"+projectName)
+									.call();
+									
+								} catch (GitAPIException e1)
+								{
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							}
+							
+							// Bearbeitungsstaus festschreiben
+							//addCommand();	
+							commitCommand("resolve conflicts");
+							
+							// force push (soll divergierende Branches synchronisieren)  
+							PushCommand pushCommand = git.push();
+							pushCommand.setForce(true).call();		
+							
+							return null;
+						}
+					}
+					
+					MessageDialog.openInformation(
+							Display.getDefault().getActiveShell(), "Team",
+							"Pull Error\n" + e.getMessage()); // $NON-NLS-N$
+					
+					return null;
+				}
+				
+			}
+			catch (Exception e2)
+			{
+				System.out.println("Result: "+ pullResult.isSuccessful());
+				e2.printStackTrace();
+			}
 		}
 				
 		return null;
@@ -225,7 +301,25 @@ public class TeamUtils
 			}
 		}
 	}
-	
+
+	/**
+	 * 
+	 * @param iProject
+	 * @throws Exception
+	 */
+	public static void pullCommand() throws Exception 
+	{
+		Repository localRepos = getLocalRepository();
+		if(localRepos != null)
+		{
+			try(Git git = new Git(localRepos))
+			{
+				PullCommand pullCommand = git.pull();
+				pullCommand.call();				
+			}
+		}
+	}
+
 	/**
 	 * 
 	 * @param iProject
@@ -372,7 +466,7 @@ public class TeamUtils
 		}
 	}
 	
-	public static DirCache addProjectCommand() throws Exception
+	public static DirCache addCommand() throws Exception
 	{		
 		Repository repos = getLocalRepository();
 		if(repos != null)
@@ -560,44 +654,50 @@ public class TeamUtils
 		
         return refNames;
 	}
-	
+
 	/**
 	 * 
 	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void checkoutRemoteProject(IProject iProject)  throws Exception 
+	public static void checkoutCommand(String branchName)  throws Exception 
 	{
 		Repository localRepos = getLocalRepository();		
-		if((localRepos != null) && (iProject != null))
+		if((localRepos != null))
 		{
 			try (Git git = new Git(localRepos))
 			{
-				String branchName = iProject.getName();
-
+				branchName = StringUtils.isEmpty(branchName) ? "master" : branchName;
 				git.checkout().setName(branchName).setForce(true).call();
-				git.branchCreate().setName(branchName)
-						.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
-						.setStartPoint(branchName).setForce(true).call();
 			}
 		}
 	}
 	
 	/**
-	 * Der Branch mit dem Namen des Projekts 'iProject' wird ausgecheckt.
-	 * Header zeigt jetzt auf diesen Branch
+	 * Der Remote Branch mit dem Namen des Projekts 'iProject' wird ausgecheckt.
+	 * Header zeigt jetzt auf den ausgecheckten lokalen Branch
 	 * 
 	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void checkoutLocalProject(IProject iProject) throws Exception 
+	public static void checkoutProject(IProject iProject) throws Exception 
 	{
 		Repository localRepos = getLocalRepository();		
 		if((localRepos != null) && (iProject != null))
 		{
 			try (Git git = new Git(localRepos))
 			{
-				git.checkout().setName(iProject.getName()).call();
+				String projectName = iProject.getName();
+				List<String>branchNames = getLocalBranchNames();
+				boolean createFlag = !branchNames.contains(projectName);
+				
+				git.checkout()
+				.setCreateBranch(createFlag)
+				.setName(iProject.getName())
+				.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
+				.setStartPoint("origin/"+iProject.getName())
+				.setForce(true)
+				.call();
 			}
 		}
 	}
@@ -612,23 +712,30 @@ public class TeamUtils
 		if (iProject != null)
 		{
 			String projectName = iProject.getName();
-			List<String> projectNames = getLocalBranchNames();
-			projectNames.contains(projectName);
-			if (!projectNames.contains(projectName))
+			createBranch(projectName);
+		}
+	}
+	
+	public static void createBranch(String branchName)  throws Exception
+	{
+		List<String> branchNames = getLocalBranchNames();		
+		if (!branchNames.contains(branchName))
+		{
+			Repository localRepos = getLocalRepository();
+			if (localRepos != null)
 			{
-				Repository localRepos = getLocalRepository();
-				if (localRepos != null)
+				try (Git git = new Git(localRepos))
 				{
-					try (Git git = new Git(localRepos))
-					{
-						// master auschecken (Workspace loeschen (definiert
-						// zuruecksetzen auf master-Daten)
-						git.checkout().setName("master").call();
+					// master auschecken (Workspace loeschen (definiert
+					// zuruecksetzen auf master-Daten)
+					//git.checkout().setName("master").call();
 
-						// neuen Branch fuer 'iProject' erzeugen
-						git.checkout().setCreateBranch(true)
-								.setName(projectName).call();
-					}
+					// neuen Branch fuer 'iProject' erzeugen
+					git.checkout().setCreateBranch(true)
+							.setName(branchName).call();
+					
+					// Branch konfigurieren
+					//setBranchConfig(iProject.getName());
 				}
 			}
 		}
@@ -889,6 +996,25 @@ public class TeamUtils
 		return remoteRepository;
 	}
 	
+	public static void setBranchConfig(String branchName) throws Exception
+	{
+		Repository localRepos = getLocalRepository();
+		
+		StoredConfig config = localRepos.getConfig();			
+		Set<String>localConfigs = config.getNames("branch", branchName); //$NON-NLS-N$
+		if((localConfigs != null) && (localConfigs.isEmpty()))
+		{
+			// 'branch/branchnmae Sektion konfigurieren
+			config.setString("branch", branchName, "merge", "refs/heads/"+branchName); //$NON-NLS-N$
+			
+			if(!StringUtils.equals(branchName, "master"))
+				config.setString("branch", branchName, "rebase", "false"); //$NON-NLS-N$
+			
+			config.setString("branch", branchName, "remote", "origin"); //$NON-NLS-N$
+			config.save();
+		}		
+	}
+	
 	/**
 	 * Das lokale Repository wird fuer den Zugriff auf das RemoteRepository konfiguriert.
 	 * (@see TeamAddon)
@@ -897,11 +1023,13 @@ public class TeamUtils
 	 * @throws IOException 
 	 * ,
 	 */
-	public static void setRemote(String remoteURI) throws Exception
+	public static void setRemoteConfig(String remoteURI) throws Exception
 	{
 		Repository localRepos = getLocalRepository();
 				
-		StoredConfig config = localRepos.getConfig();			
+		StoredConfig config = localRepos.getConfig();		
+		
+		/*
 		Set<String>localConfigs = config.getNames("branch","master"); //$NON-NLS-N$
 		if((localConfigs != null) && (localConfigs.isEmpty()))
 		{
@@ -911,6 +1039,7 @@ public class TeamUtils
 			config.setString("fsck", "", "missingEmail", "ignore");	//$NON-NLS-N$
 			config.save();
 		}
+		*/
 					
 		Set<String> names = config.getNames("remote", "origin"); //$NON-NLS-N$
 		if ((names != null) && (names.isEmpty()))
@@ -979,6 +1108,7 @@ public class TeamUtils
 	public static boolean isExisitingRepository(String reposPath)
 	{
 		File repoDir = new File(reposPath);
+		
 		if(repoDir.exists() && repoDir.isDirectory())
 		{
 			FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -997,6 +1127,41 @@ public class TeamUtils
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * @param reposURI
+	 * @return
+	 * @throws Exception
+	 */
+	public static boolean isExisitingRemoteRepository(String repositoryName) throws Exception
+	{		
+		boolean result = false;
+
+		/*
+		Repository localRepos = getLocalRepository();		
+		if(localRepos != null)
+		{
+			try (Git git = new Git(localRepos))
+			{
+				CloneCommand clone = git.cloneRepository();
+				clone.setURI(repositoryName)
+				.call();
+			}
+		}
+		*/
+		
+		try
+		{
+			URL url = new URL(repositoryName);
+			InputStream input = url.openStream();
+			result = true;
+		} catch (Exception e)
+		{			
+		}
+		
+		return result;
+		
 	}
 	
 	/**

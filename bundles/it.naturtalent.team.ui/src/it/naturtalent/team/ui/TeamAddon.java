@@ -34,19 +34,21 @@ public class TeamAddon
 	
 	@Inject
 	@Optional
-	public void applicationStarted(
-			@EventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event)
+	public void applicationStarted(@EventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event)
 	{
 		if(preferenceRegistry != null)	
 		{
 			// Adapter der Teampraeferenzen eintragen
 			preferenceRegistry.getPreferenceAdapters().add(new TeamPreferenceAdapter());
 			
-	
+			// Default-Teampraeferenzknoten
 			IEclipsePreferences defaultPreferenceNode = DefaultScope.INSTANCE
 					.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);
+			
+			IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE
+					.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);
 						
-			// DefaultLocalRepository werden definiert			
+			// Ein Defaultverzeichnis fuer das lokale Repository festlegen			
 			File defaultReposDir = new File(System.getProperty(
 				it.naturtalent.application.Activator.NT_PROGRAM_HOME),
 				TeamPreferenceAdapter.REPOSITORIES_DIRECRORYNAME);
@@ -58,7 +60,7 @@ public class TeamAddon
 			if(!defaultReposDir.exists())
 				defaultReposDir.mkdir();		
 		
-			// existiert bereits ein Default Local Repository
+			// existiert bereits ein Default Local Repository (.git - Verzeichnis im Workspace)
 			if(!TeamUtils.isExisitingRepository(reposDir + File.separator + TeamUtils.DOT_GIT))
 			{
 				try
@@ -66,9 +68,18 @@ public class TeamAddon
 					// Default Local Repository erzeugen
 					TeamUtils.createLocalRepository();
 					
+					// 'master' - Branch configurieren
+					TeamUtils.setBranchConfig("master");
+					
+					// URI auf Remote-Repository configurieren
+					String remoteURI = instancePreferenceNode.get(
+							TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI,null);
+					if(StringUtils.isNotEmpty(remoteURI))
+						TeamUtils.setRemoteConfig(remoteURI);
+					
 					// master-branch erzeugen (mit DummyFile als content)
-					TeamUtils.createMasterDummyFile();
-					TeamUtils.addProjectCommand();			
+					//TeamUtils.createMasterDummyFile();
+					TeamUtils.addCommand();			
 					TeamUtils.commitCommand("initial Master");
 					
 				} catch (Exception e)
@@ -78,6 +89,10 @@ public class TeamAddon
 				}
 			}
 
+			//
+			//  Default Remote Repository
+			//
+						
 			// DefaultRemoteRepository werden definiert
 			File defaultRemoteReposDir = new File(System.getProperty(
 					it.naturtalent.application.Activator.NT_PROGRAM_HOME),
@@ -85,28 +100,29 @@ public class TeamAddon
 			defaultRemoteReposDir = new File(defaultRemoteReposDir,
 					TeamPreferenceAdapter.DEFAULT_REMOTE_REPOSITORYNAME);
 			String remoteDefaultReposDir = defaultRemoteReposDir.getAbsolutePath();	
-			
+						
 			// sicherstellen, dass das Default Remote-Repository Verzeichnis existiert		
 			if(!defaultRemoteReposDir.exists())
 				defaultRemoteReposDir.mkdir();		
 			
-			URI remoteURI = defaultRemoteReposDir.toURI();					
+			URI remoteDefaultURI = defaultRemoteReposDir.toURI();					
 			defaultPreferenceNode.put(
-					TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI, remoteURI.toString());
+					TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI, remoteDefaultURI.toString());
 			
-			// Default Remote Repository checken
+			// existiert ein Default Remote Repository
 			if(!TeamUtils.isExisitingRepository(remoteDefaultReposDir))
 			{
 				try
 				{
-					// Default Remote Repository erzeugen
+					// Default RemoteURI praferenzieren
 					String remoteDirURI = defaultPreferenceNode.get(
 							TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI, null);
+					
+					// Default Remote Repository erzeugen
 					TeamUtils.createRemoteRepository(remoteDirURI);
 					
-					// 'master' pushen
-					TeamUtils.setRemote(remoteDirURI);
-					TeamUtils.pushCommand();
+					// RemoteURI im lokalen Repository konfigurieren
+					TeamUtils.setRemoteConfig(remoteDirURI);					
 					
 				} catch (Exception e)
 				{
@@ -114,6 +130,33 @@ public class TeamAddon
 					e.printStackTrace();
 				}				
 			}
+			
+			//
+			//  Remote Repository
+			//
+						
+			String remoteURI = instancePreferenceNode.get(
+					TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI,null);
+			
+			if(StringUtils.isNotEmpty(remoteURI) && !StringUtils.equals(remoteDefaultReposDir, remoteURI))
+			{				
+				try
+				{
+					if(!TeamUtils.isExisitingRemoteRepository(remoteURI))
+					{
+						// neues Remote Repository anlegen
+						TeamUtils.createRemoteRepository(remoteURI);
+						
+						// RemoteURI im lokalen Repository konfigurieren
+						TeamUtils.setRemoteConfig(remoteURI);									
+					}
+					
+				} catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+			}			
 		}
 	}
 
