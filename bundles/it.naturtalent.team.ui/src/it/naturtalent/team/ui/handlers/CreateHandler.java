@@ -32,7 +32,7 @@ public class CreateHandler
 			
 			// master-branch erzeugen (mit DummyFile als content)
 			TeamUtils.createMasterDummyFile();
-			TeamUtils.addProjectCommand();			
+			TeamUtils.addCommand();			
 			TeamUtils.commitCommand("initial Master");
 			
 			MessageDialog.openInformation(shell,"Repository","Ein Repository wurde erfolgreich erzeugt"); //$NON-NLS-N$
