@@ -162,7 +162,7 @@ public class TeamPreferenceAdapter extends AbstractPreferenceAdapter
 		{
 			// RemoteURI im lokalen Repository bekanntmachen
 			value = instancePreferenceNode.get(PREFERENCE_TEAM_REMOTEREPOS_URI,null);
-			TeamUtils.setRemote(value);
+			TeamUtils.setRemoteConfig(value);
 			
 			// Praeferenzen festschreiben
 			instancePreferenceNode.flush();

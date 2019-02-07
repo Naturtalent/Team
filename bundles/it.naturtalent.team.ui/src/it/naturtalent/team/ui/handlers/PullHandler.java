@@ -3,6 +3,7 @@ package it.naturtalent.team.ui.handlers;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Named;
@@ -35,6 +36,11 @@ public class PullHandler
 		
 		try
 		{
+			// Projekt auschecken
+			//TeamUtils.checkoutProject(iProject);
+			
+			//TeamUtils.copyToRepositoryWorkspace(iProject);
+			
 			// das gesamten Workspace vom externen Repository pullen (fetch und merge)
 			PullResult pullResult = TeamUtils.pullRepository(iProject);
 			
@@ -42,6 +48,7 @@ public class PullHandler
 		{
 			message = "Pull Error\n"+e.getMessage();
 		}
+		
 		
 		MessageDialog.openInformation(shell,"Repository",message); //$NON-NLS-N$
 	}

@@ -48,7 +48,7 @@ public class PushHandler
 				TeamUtils.createProjectBranch(iProject);
 				
 				TeamUtils.copyToRepositoryWorkspace(iProject);
-				TeamUtils.addProjectCommand();
+				TeamUtils.addCommand();
 				TeamUtils.commitCommand("initial Project");
 				TeamUtils.pushProject(iProject);
 				
@@ -57,13 +57,13 @@ public class PushHandler
 			}
 			
 			// durch auschecken wird Projektbranch zum HEAD-Branch 
-			TeamUtils.checkoutLocalProject(iProject);
+			TeamUtils.checkoutProject(iProject);
 			
 			// Projektdaten in den Workspace kopieren
 			TeamUtils.copyToRepositoryWorkspace(iProject);
 			
 			// Staging
-			TeamUtils.addProjectCommand();
+			TeamUtils.addCommand();
 
 			// Abbruch, wenn commit sinnlos, weil es keine Veränderungen gab 
 			if(!TeamUtils.readyForCommit())
