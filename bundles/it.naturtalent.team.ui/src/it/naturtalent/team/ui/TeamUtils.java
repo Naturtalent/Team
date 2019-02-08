@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
@@ -1007,7 +1009,10 @@ public class TeamUtils
 			config.setString("branch", branchName, "merge", "refs/heads/"+branchName); //$NON-NLS-N$
 			
 			if(!StringUtils.equals(branchName, "master"))
+			{
 				config.setString("branch", branchName, "rebase", "false"); //$NON-NLS-N$
+				config.setString("fsck", "", "missingEmail", "ignore");	//$NON-NLS-N$
+			}
 			
 			config.setString("branch", branchName, "remote", "origin"); //$NON-NLS-N$
 			config.save();
@@ -1300,16 +1305,21 @@ public class TeamUtils
 	 * @param iProject
 	 * @throws Exception
 	 */
+	
+	// Filter zum Ausblenden des git-Verzeichnisses beim Kopieren des Workspaces
+	private static IOFileFilter gitDirFilter = FileFilterUtils
+			.notFileFilter(FileFilterUtils.nameFileFilter(DOT_GIT));
+
 	public static void copyFromRepositoryWorkspace(IProject iProject) throws Exception
 	{
 		// Zielverzeichnis ist das IProject
 		File destDir = iProject.getLocation().toFile();
 		
 		// Quellverzeichnis ist der Workspace des lokalen Respositories
-		File srcDir = new File(getRepositoryProjectPath(iProject));
+		File srcDir = getDefaultLocalRepositoryDir();
 		
 		// alle Resourcen vom IProjekt in den Repository Workspace kopieren
-		FileUtils.copyDirectory(srcDir, destDir);
+		FileUtils.copyDirectory(srcDir, destDir, gitDirFilter);
 	}
 	
 	
