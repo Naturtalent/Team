@@ -36,8 +36,12 @@ public class PullHandler
 		
 		try
 		{
+			TeamUtils.checkoutCommand(null);
+			
 			// Projekt auschecken
-			//TeamUtils.checkoutProject(iProject);
+			TeamUtils.checkoutProject(iProject);
+			
+			TeamUtils.copyToRepositoryWorkspace(iProject);
 			
 			// das gesamten Workspace vom externen Repository pullen (fetch und merge)
 			PullResult pullResult = TeamUtils.pullRepository(iProject);
