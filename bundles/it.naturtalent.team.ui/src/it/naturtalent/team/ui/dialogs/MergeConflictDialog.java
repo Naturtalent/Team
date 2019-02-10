@@ -1,8 +1,10 @@
 package it.naturtalent.team.ui.dialogs;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -25,9 +27,10 @@ public class MergeConflictDialog extends TitleAreaDialog
 	
 	private CheckboxTableViewer checkboxTableViewer;
 	
-	private List<String>failingPathList;
+	private List<String>conflictFiles;
 	
-	private String [] selectedFilePath;
+	private String [] theirFiles;
+	private String [] ourFiles;
 
 	/**
 	 * Create the dialog.
@@ -41,10 +44,10 @@ public class MergeConflictDialog extends TitleAreaDialog
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public MergeConflictDialog(Shell parentShell, List<String> failingPathList)
+	public MergeConflictDialog(Shell parentShell, List<String> conflictFiles)
 	{
 		super(parentShell);
-		this.failingPathList = failingPathList;
+		this.conflictFiles = conflictFiles;
 	}
 
 
@@ -72,7 +75,7 @@ public class MergeConflictDialog extends TitleAreaDialog
 		tableFailingFiles = checkboxTableViewer.getTable();
 		tableFailingFiles.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		checkboxTableViewer.setContentProvider(new ArrayContentProvider());
-		checkboxTableViewer.setInput(failingPathList);
+		checkboxTableViewer.setInput(conflictFiles);
 		
 		new Label(container, SWT.NONE);
 		
@@ -114,17 +117,26 @@ public class MergeConflictDialog extends TitleAreaDialog
 	protected void okPressed()
 	{
 		Object[] result = checkboxTableViewer.getCheckedElements();
-		selectedFilePath = new String[result.length];
-		System.arraycopy(result, 0, selectedFilePath, 0,result.length);
+		theirFiles = new String[result.length];
+		System.arraycopy(result, 0, theirFiles, 0,result.length);
+				
+		List<String>theirList = new ArrayList<String>();
+		for(String file : theirFiles)
+			theirList.add(file);
+		conflictFiles.removeAll(theirList);
 		
 		super.okPressed();
 	}
 
-	public String[] getSelectedFilePath()
+	public String[] getTheirFiles()
 	{
-		return selectedFilePath;
+		return theirFiles;
 	}
 
+	public List<String> getOurFiles()
+	{
+		return conflictFiles;
+	}
 
 
 }

@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.CanWriteFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.ArrayUtils;
@@ -44,6 +45,7 @@ import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.RemoteListCommand;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -131,13 +133,26 @@ public class TeamUtils
 			
 		}
 	}
+	
+	public static void resetCommand() throws Exception
+	{
+		Repository localRepos = getLocalRepository();
+		if(localRepos != null)
+		{
+			try(Git git = new Git(localRepos))
+			{
+				ResetCommand resetCommand = git.reset();	
+				resetCommand.setRef("HEAD").call();
+			}
+		}
+	}
 
 	/**
 	 * @param iProject
 	 * @return
 	 * @throws Exception
 	 */
-	public static PullResult pullRepository(IProject iProject) 
+	public static PullResult pullProject(IProject iProject) 
 	{
 		PullResult pullResult = null;
 		Repository localRepos = getLocalRepository();
@@ -166,20 +181,21 @@ public class TeamUtils
 								Display.getDefault().getActiveShell(),conflictingPaths);
 						if (mergeDialog.open() == MergeConflictDialog.OK)
 						{
-							String [] conflictFiles = mergeDialog.getSelectedFilePath();
-							if(ArrayUtils.isNotEmpty(conflictFiles))
+							String [] theirFiles = mergeDialog.getTheirFiles();
+							if(ArrayUtils.isNotEmpty(theirFiles))
 							{
 								try
 								{
-									// public CheckoutCommand setStage(CheckoutCommand.Stage stage)
+									// auschecken der selektierten theirFiles
 									CheckoutCommand checkOutCommand = git.checkout();
 									
-									checkOutCommand.setAllPaths(false);
-									
-									for(String conflictFile : conflictFiles)								
+									// die selektierten Files in CheckoutCommand eintragen
+									for(String conflictFile : theirFiles)								
 										checkOutCommand.addPath(conflictFile);
 									
+									// aus dem RemoteBranch auschecken
 									checkOutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
+									.setAllPaths(false)
 									.setStartPoint("origin/"+projectName)
 									.call();
 									
@@ -188,20 +204,33 @@ public class TeamUtils
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
+
 							}
 							
-							// Bearbeitungsstaus festschreiben
-							//addCommand();	
-							commitCommand("resolve conflicts");
+							List<String>ourFiles = mergeDialog.getOurFiles();
+							if(!ourFiles.isEmpty())
+							{
+								AddCommand addCommand = new AddCommand(localRepos);										
+								for(String ourFile : ourFiles)
+									addCommand.addFilepattern(ourFile);
+								addCommand.call();
+							}
 							
-							// force push (soll divergierende Branches synchronisieren)  
-							PushCommand pushCommand = git.push();
-							pushCommand.setForce(true).call();		
+							commitCommand("resolve conflicts with theirs");
+							git.push().setForce(true).call();
 							
 							return null;
 						}
+						
+						// Abbruch MergeConflictDialog
+						MessageDialog.openInformation(
+								Display.getDefault().getActiveShell(), "Team",
+								"Pull Abbruch"); // $NON-NLS-N$	
+						
+						return null;
 					}
 					
+					// Fehlermeldung
 					MessageDialog.openInformation(
 							Display.getDefault().getActiveShell(), "Team",
 							"Pull Error\n" + e.getMessage()); // $NON-NLS-N$
@@ -220,65 +249,6 @@ public class TeamUtils
 		return null;
 	}
 	
-	public static PullResult pullRepositoryOLD() throws Exception
-	{
-		UsernamePasswordCredentialsProvider user = new UsernamePasswordCredentialsProvider("xxxx", "xxxx");
-		
-		Repository localRepos = getLocalRepository();
-		if(localRepos != null)
-		{
-			Git git = new Git(localRepos);
-			
-			// PullCommand 
-			PullCommand pcmd = git.pull();
-			PullResult pullResult = pcmd.call();
-			
-			// Mergeresult checken
-			MergeResult mergeResult = pullResult.getMergeResult();
-			if (mergeResult.getFailingPaths() != null)
-			{
-				// es existieren Files die nicht automatisch zusammengefuehrt werden koennen 
-				Map<String, ResolveMerger.MergeFailureReason> mapConflicts = mergeResult.getFailingPaths();
-				
-				// Pfade der failing Files listen
-				Set<String> conflictFiles = mapConflicts.keySet();
-				Iterator<String> it = conflictFiles.iterator();					
-				List<String>filePathList = new ArrayList<String>();
-				it.forEachRemaining(filePathList::add);
-					
-				MergeConflictDialog mergeDialog = new MergeConflictDialog(
-							Display.getDefault().getActiveShell(),filePathList);
-				if(mergeDialog.open() == MergeConflictDialog.OK)
-				{
-					String[] selectedFilePath = mergeDialog.getSelectedFilePath();
-					for(String filePath : selectedFilePath)
-						replaceFailingFile(localRepos, filePath);
-				}
-					
-				// Filepattern (Verzeichnis des NtProjekts) fuer Add ermitteln
-				String filepattern = filePathList.get(0);
-				filepattern = StringUtils.substring(filepattern, 0, StringUtils.indexOf(filepattern, "/"));
-						
-				// stagen
-				AddCommand addCommand = new AddCommand(localRepos);		
-				addCommand.addFilepattern(filepattern);				
-				addCommand.call();	
-
-				// commit
-				CommitCommand commitCommand = git.commit();
-				commitCommand.setAmend(false).setMessage("no message").setInsertChangeId(true);
-				commitCommand.call();
-				
-				// pushen
-				pushRepositoryOLD();
-				
-			  return null;
-			}
-		}
-		
-		return null;
-	}
-
 	/**
 	 * Push Projektbranch
 	 * 
@@ -662,7 +632,7 @@ public class TeamUtils
 	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void checkoutCommand(String branchName)  throws Exception 
+	public static void checkoutCommand(String branchName) 
 	{
 		Repository localRepos = getLocalRepository();		
 		if((localRepos != null))
@@ -671,7 +641,12 @@ public class TeamUtils
 			{
 				branchName = StringUtils.isEmpty(branchName) ? "master" : branchName;
 				git.checkout().setName(branchName).setForce(true).call();
-			}
+				
+			}catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
 		}
 	}
 	
@@ -1327,34 +1302,17 @@ public class TeamUtils
 		FileUtils.copyDirectory(srcDir, destDir, gitDirFilter);
 	}
 	
-	
-	/**
-	 * Ersetzt die mergefailing - Datei durch die remote-Variante
-	 * 
-	 * @param localRepos
-	 * @param failingFilePath
-	 */
-	public static void replaceFailingFile(Repository localRepos, String failingFilePath)
-	{		
-		try
-		{
-			// die 'gefetchte' Datei adressieren 
-			ObjectId fetchObjectID = walkRepository(localRepos,Constants.FETCH_HEAD, failingFilePath);
-			if (fetchObjectID != null)
-			{
-				// failing-Datei ersetzen
-				ObjectLoader loader = localRepos.open(fetchObjectID);
-				File objFile = new File(getDefaultLocalRepositoryDir(), failingFilePath);
-				FileOutputStream out = new FileOutputStream(objFile);
-				loader.copyTo(out);
-			}
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+	public static String [] getNotWritableFiles(IProject iProject)
+	{
+		File srcDir = iProject.getLocation().toFile();
+		
+		boolean w = srcDir.getParentFile().canWrite();
+		
+		String[] files = srcDir.list( CanWriteFileFilter.CANNOT_WRITE );
+		return files;
 	}
-
+	
+	
 	private static ObjectId walkRepository(Repository repos, String resolveConstant, String filePath)
 	{
 		try
