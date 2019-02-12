@@ -146,6 +146,117 @@ public class TeamUtils
 			}
 		}
 	}
+	
+	public static String synchronizeProject(IProject iProject) 
+	{	
+		String message = "Pull Project";
+		
+		Repository localRepos = getLocalRepository();
+		if((localRepos != null) && (iProject != null))
+		{
+			String projectName = iProject.getName();
+			try (Git git = new Git(localRepos))
+			{		
+				// PullCommand	ausfuehren
+				PullCommand pcmd = git.pull();
+				pcmd.setRemoteBranchName(projectName).call();
+				
+				// Staging
+				addCommand();
+
+				// Abbruch, wenn commit sinnlos, weil es keine Veränderungen gab 
+				if(TeamUtils.readyForCommit())
+				{
+					// Committen
+					TeamUtils.commitCommand(null);
+					
+					// push
+					TeamUtils.pushProject(iProject);					
+				}
+			}
+			catch (Exception e)
+			{
+				if (e instanceof CheckoutConflictException)
+				{					
+					CheckoutConflictException checkoutException = (CheckoutConflictException) e;
+					List<String> conflictingPaths = checkoutException.getConflictingPaths();
+					try
+					{
+						String resolveMessage = resolveConflicting(iProject, conflictingPaths);
+						if(StringUtils.isNotEmpty(resolveMessage))
+							message = message + "\n"+ resolveMessage;						
+						
+					} catch (Exception e1)
+					{
+						message = message + "\n" + e1.getMessage(); 
+					}					
+				}
+				
+				// sonstige exception
+				message = message + "\n" + e.getMessage();
+			}
+		}
+		
+		return message;
+	}
+	
+	private static String resolveConflicting(IProject iProject, List<String>conflictingPaths) throws Exception
+	{
+		Repository localRepos = getLocalRepository();
+		if((localRepos != null) && (iProject != null))
+		{
+			String projectName = iProject.getName();
+			try (Git git = new Git(localRepos))
+			{
+				MergeConflictDialog mergeDialog = new MergeConflictDialog(
+						Display.getDefault().getActiveShell(),conflictingPaths);
+				if (mergeDialog.open() == MergeConflictDialog.OK)
+				{
+					String [] theirFiles = mergeDialog.getTheirFiles();
+					if(ArrayUtils.isNotEmpty(theirFiles))
+					{
+						try
+						{
+							// auschecken der selektierten theirFiles
+							CheckoutCommand checkOutCommand = git.checkout();
+							
+							// die selektierten Files in CheckoutCommand eintragen
+							for(String conflictFile : theirFiles)								
+								checkOutCommand.addPath(conflictFile);
+							
+							// aus dem RemoteBranch auschecken
+							checkOutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
+							.setAllPaths(false)
+							.setStartPoint("origin/"+projectName)
+							.call();
+							
+						} catch (GitAPIException e1)
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+
+					}
+					
+					List<String>ourFiles = mergeDialog.getOurFiles();
+					if(!ourFiles.isEmpty())
+					{
+						AddCommand addCommand = new AddCommand(localRepos);										
+						for(String ourFile : ourFiles)
+							addCommand.addFilepattern(ourFile);
+						addCommand.call();
+					}
+					
+					commitCommand("resolve conflicts");
+					git.push().setForce(true).call();
+					
+					return "";
+				}
+			}
+		}
+		
+		return "cancel conflict";
+	}
 
 	/**
 	 * @param iProject
@@ -689,11 +800,11 @@ public class TeamUtils
 		if (iProject != null)
 		{
 			String projectName = iProject.getName();
-			createBranch(projectName);
+			createLocalBranch(projectName);
 		}
 	}
 	
-	public static void createBranch(String branchName)  throws Exception
+	public static void createLocalBranch(String branchName)  throws Exception
 	{
 		List<String> branchNames = getLocalBranchNames();		
 		if (!branchNames.contains(branchName))
@@ -703,16 +814,8 @@ public class TeamUtils
 			{
 				try (Git git = new Git(localRepos))
 				{
-					// master auschecken (Workspace loeschen (definiert
-					// zuruecksetzen auf master-Daten)
-					//git.checkout().setName("master").call();
-
-					// neuen Branch fuer 'iProject' erzeugen
-					git.checkout().setCreateBranch(true)
-							.setName(branchName).call();
-					
-					// Branch konfigurieren
-					//setBranchConfig(iProject.getName());
+					// neuen Branch erzeugen
+					git.checkout().setCreateBranch(true).setName(branchName).call();
 				}
 			}
 		}
@@ -1082,6 +1185,9 @@ public class TeamUtils
 	}
 	
 	/**
+	 * Existiert ein lokales Repository unter dem angegebenen Path.
+	 * 'reposPath' ist Workspace-Directory indem das '.git'-Verzeichnis erwartet wird.
+	 * 
 	 * @param reposPath
 	 * @return
 	 */
@@ -1110,38 +1216,21 @@ public class TeamUtils
 	}
 	
 	/**
+	 * Checkt die Existenz des Remote-Repositorys.
+	 * 
 	 * @param reposURI
 	 * @return
 	 * @throws Exception
 	 */
-	public static boolean isExisitingRemoteRepository(String repositoryName) throws Exception
+	public static boolean isExisitingRemoteRepository(String repositoryURL) throws Exception
 	{		
 		boolean result = false;
-
-		/*
-		Repository localRepos = getLocalRepository();		
-		if(localRepos != null)
-		{
-			try (Git git = new Git(localRepos))
-			{
-				CloneCommand clone = git.cloneRepository();
-				clone.setURI(repositoryName)
-				.call();
-			}
-		}
-		*/
 		
-		try
-		{
-			URL url = new URL(repositoryName);
-			InputStream input = url.openStream();
-			result = true;
-		} catch (Exception e)
-		{			
-		}
+		URL url = new URL(repositoryURL);
+		InputStream input = url.openStream();
+		result = true;
 		
-		return result;
-		
+		return result;		
 	}
 	
 	/**

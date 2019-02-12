@@ -10,20 +10,22 @@ import it.naturtalent.team.ui.TeamUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 
-public class DisconnectHandler
+public class ConnectHandler
 {
 	@Execute
 	public void execute(@Optional EPartService partService)
-	{			
-		try
-		{	
-			IProject iProject = TeamUtils.getSelectedIProject(partService);
-			TeamUtils.deleteBranchProjectCommand(iProject);
-			
-		} catch (Exception e3)
+	{
+		IProject iProject = TeamUtils.getSelectedIProject(partService);
+		if(iProject != null)
 		{
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			try
+			{
+				TeamUtils.createProjectBranch(iProject);
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -35,8 +37,8 @@ public class DisconnectHandler
 		if(iProject == null)
 			return false;
 		
-		// Enable, wenn ein Projectbranch existiert
-		return(TeamUtils.existLocalProjectBracnch(iProject));
+		// Disable, wenn bereits ein Projectbranch existiert
+		return(!TeamUtils.existLocalProjectBracnch(iProject));
 	}
-
+		
 }

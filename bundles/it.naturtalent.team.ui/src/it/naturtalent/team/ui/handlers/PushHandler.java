@@ -56,6 +56,11 @@ public class PushHandler
 				return;
 			}
 			
+			// 'master' auschecken - 'loescht' den Workspace 
+			TeamUtils.checkoutCommand(null);
+			TeamUtils.resetCommand();
+
+			
 			// durch auschecken wird Projektbranch zum HEAD-Branch 
 			TeamUtils.checkoutProject(iProject);
 			
