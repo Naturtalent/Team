@@ -147,9 +147,13 @@ public class TeamUtils
 		}
 	}
 	
+	/**
+	 * @param iProject
+	 * @return
+	 */
 	public static String synchronizeProject(IProject iProject) 
 	{	
-		String message = "Pull Project";
+		String message = "keine erkennbare Fehler";
 		
 		Repository localRepos = getLocalRepository();
 		if((localRepos != null) && (iProject != null))
@@ -161,10 +165,10 @@ public class TeamUtils
 				PullCommand pcmd = git.pull();
 				pcmd.setRemoteBranchName(projectName).call();
 				
-				// Staging
+				// Staging der neu im Workspace aufgenommen Resourcen
 				addCommand();
 
-				// Abbruch, wenn commit sinnlos, weil es keine Veränderungen gab 
+				// Abbruch, wenn anschliessender commit sinnlos, weil es keine Veränderungen gab 
 				if(TeamUtils.readyForCommit())
 				{
 					// Committen
@@ -182,24 +186,35 @@ public class TeamUtils
 					List<String> conflictingPaths = checkoutException.getConflictingPaths();
 					try
 					{
+						// Konflikte aufloesen 
 						String resolveMessage = resolveConflicting(iProject, conflictingPaths);
 						if(StringUtils.isNotEmpty(resolveMessage))
-							message = message + "\n"+ resolveMessage;						
+							message = resolveMessage;						
 						
 					} catch (Exception e1)
 					{
-						message = message + "\n" + e1.getMessage(); 
+						message = e1.getMessage(); 
 					}					
 				}
 				
 				// sonstige exception
-				message = message + "\n" + e.getMessage();
+				message = e.getMessage();
 			}
 		}
 		
 		return message;
 	}
 	
+	/**
+	 * Konfliktloesung
+	 * In einem Dialog werden die Konfliktdateinen angezeigt, es muss entschieden werden, ob die 'Teamdatei' (theirs) oder
+	 * die Eigene (ours) weiter verwenden will.
+	 *  
+	 * @param iProject
+	 * @param conflictingPaths
+	 * @return
+	 * @throws Exception
+	 */
 	private static String resolveConflicting(IProject iProject, List<String>conflictingPaths) throws Exception
 	{
 		Repository localRepos = getLocalRepository();
@@ -232,10 +247,8 @@ public class TeamUtils
 							
 						} catch (GitAPIException e1)
 						{
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							return e1.getMessage();
 						}
-
 					}
 					
 					List<String>ourFiles = mergeDialog.getOurFiles();
@@ -1386,6 +1399,9 @@ public class TeamUtils
 		
 		// Quellverzeichnis ist der Workspace des lokalen Respositories
 		File srcDir = getDefaultLocalRepositoryDir();
+		
+		// Projektverzeichnis loeschen
+		FileUtils.deleteDirectory(destDir);
 		
 		// alle Resourcen vom IProjekt in den Repository Workspace kopieren
 		FileUtils.copyDirectory(srcDir, destDir, gitDirFilter);

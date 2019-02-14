@@ -5,7 +5,6 @@
       <children xsi:type="menu:DirectMenuItem" xmi:id="_-AxOMAuGEemlhYhAlJ9qVA" elementId="it.naturtalent.team.ui.directmenuitem.connect" label="Connect" tooltip="mit dem Team Repository verbinden" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.ConnectHandler"/>
       <children xsi:type="menu:DirectMenuItem" xmi:id="_Mt_l0A7jEemeOeckhfscWQ" elementId="it.naturtalent.team.ui.directmenuitem.sysnchronize" label="Synchronisieren" tooltip="Projekt mit dem Team Repository synchronisieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.SynchronHandler"/>
       <children xsi:type="menu:DirectMenuItem" xmi:id="_kt3qUBqfEemLwrAlfxULyw" elementId="it.naturtalent.team.ui.directmenuitem.disconnect" label="Disconnect" tooltip="Verbindung mit dem Team Repository abbrechen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.DisconnectHandler"/>
-      <children xsi:type="menu:DirectMenuItem" xmi:id="_kLyVUBD5EemLgau5tObCoA" elementId="it.naturtalent.team.ui.directmenuitem.pull" label="Pull" tooltip="Projekt herunterladen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.PullHandler"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1KZJUA55EemhJaUodC9C1g" featurename="addons" parentElementId="it.naturtalent.e4.application">

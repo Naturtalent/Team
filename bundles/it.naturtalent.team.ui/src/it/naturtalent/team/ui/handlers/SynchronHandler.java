@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.swt.widgets.Shell;
 
+import it.naturtalent.e4.project.ui.utils.RefreshResource;
 import it.naturtalent.team.ui.TeamUtils;
 
 import javax.inject.Named;
@@ -41,6 +42,10 @@ public class SynchronHandler
 
 				// Workspace in das Projekt kopieren
 				TeamUtils.copyFromRepositoryWorkspace(iProject);
+				
+				// Projekt refreshen
+				RefreshResource refreshResource = new RefreshResource();
+				refreshResource.refresh(shell, iProject);
 				
 			} catch (Exception e)
 			{
