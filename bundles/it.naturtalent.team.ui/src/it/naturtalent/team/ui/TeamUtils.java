@@ -166,6 +166,7 @@ public class TeamUtils
 				PullCommand pcmd = git.pull();
 				pcmd.setRemoteBranchName(projectName).call();
 				
+				// im Projekt geloeschte Dateien auch im Projektbranch loeschen
 				deleteDiffFiles(iProject);
 				
 				// Staging der neu im Workspace aufgenommen Resourcen
