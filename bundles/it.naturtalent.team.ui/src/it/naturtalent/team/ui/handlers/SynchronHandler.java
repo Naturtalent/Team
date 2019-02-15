@@ -12,8 +12,12 @@ import org.eclipse.swt.widgets.Shell;
 import it.naturtalent.e4.project.ui.utils.RefreshResource;
 import it.naturtalent.team.ui.TeamUtils;
 
+import java.io.File;
+import java.util.Collection;
+
 import javax.inject.Named;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 

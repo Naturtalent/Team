@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -164,6 +165,8 @@ public class TeamUtils
 				// PullCommand	ausfuehren
 				PullCommand pcmd = git.pull();
 				pcmd.setRemoteBranchName(projectName).call();
+				
+				deleteDiffFiles(iProject);
 				
 				// Staging der neu im Workspace aufgenommen Resourcen
 				addCommand();
@@ -1334,7 +1337,77 @@ public class TeamUtils
 		FileUtils.copyDirectory(srcDir, destDir);
 	}
 	
+	// Filter zum Ausblenden des git-Verzeichnisses beim Kopieren des Workspaces
+	private static IOFileFilter gitDirFilter = FileFilterUtils
+			.notFileFilter(FileFilterUtils.nameFileFilter(DOT_GIT));
+
+	public static void copyFromRepositoryWorkspace(IProject iProject) throws Exception
+	{
+		// Zielverzeichnis ist das IProject
+		File destDir = iProject.getLocation().toFile();
+		
+		// Quellverzeichnis ist der Workspace des lokalen Respositories
+		File srcDir = getDefaultLocalRepositoryDir();
+		
+		// alle Resourcen vom IProjekt in den Repository Workspace kopieren
+		FileUtils.copyDirectory(srcDir, destDir, gitDirFilter);
+	}
 	
+	public static void deleteDiffFiles(IProject iProject)
+	{
+		IOFileFilter trueFilter = FileFilterUtils.trueFileFilter();
+		
+		// Projektdateien in einer Liste sammeln
+		List<String>projectFileNames = new ArrayList<String>();		
+		File projectDir = iProject.getLocation().toFile();
+		Iterator<File> it = FileUtils.listFilesAndDirs(projectDir, trueFilter, trueFilter).iterator();						
+		while(it.hasNext())
+		{			
+			File file = it.next();
+			if(!file.equals(projectDir))
+				projectFileNames.add(file.getName());
+		}
+
+		// die Namen der Workspacefiles in einer Liste sammeln
+		List<File>toDeleteFiles = new ArrayList<File>();
+		File workspaceDir = getDefaultLocalRepositoryDir();
+		Collection<File>workspaceFiles = FileUtils.listFilesAndDirs(workspaceDir, trueFilter, gitDirFilter);
+		Iterator<File> itWorkspaceFiles = workspaceFiles.iterator();
+		while(itWorkspaceFiles.hasNext())
+		{
+			File file = itWorkspaceFiles.next();
+			if((!projectFileNames.contains(file.getName())) && (!file.equals(workspaceDir)))
+				toDeleteFiles.add(file);					
+		}
+
+		
+		for(File defFile : toDeleteFiles)
+			FileUtils.deleteQuietly(defFile);
+		
+	}
+	
+	/**
+	 * Das Arbeitsverzeichnis wird geloescht mit Ausnahme von '.git'.
+	 * 
+	 * @param gitWorkspace
+	 */
+	public static void cleanGitWorkspace(File gitWorkspace)
+	{
+		File gitDir = new File(gitWorkspace,DOT_GIT);
+		try
+		{
+			gitDir.setWritable(false);	
+			FileUtils.cleanDirectory(gitWorkspace);
+			
+		} catch (IOException e)
+		{			
+		}finally 
+		{
+			gitDir.setWritable(true);				
+	    }
+	}
+	
+
 	/**
 	 * Eine Dummy-Datei im Workspace erzeugen
 	 * 
@@ -1361,51 +1434,11 @@ public class TeamUtils
 	}
 
 	/**
-	 * Das Arbeitsverzeichnis wird geloescht mit Ausnahme von '.git'.
-	 * 
-	 * @param gitWorkspace
-	 */
-	public static void cleanGitWorkspace(File gitWorkspace)
-	{
-		File gitDir = new File(gitWorkspace,DOT_GIT);
-		try
-		{
-			gitDir.setWritable(false);	
-			FileUtils.cleanDirectory(gitWorkspace);
-			
-		} catch (IOException e)
-		{			
-		}finally 
-		{
-			gitDir.setWritable(true);				
-	    }
-	}
-	
-	/**
 	 * Alle Resourcen vom Workspace des Respositories zurueck in das IProjekt kopieren.
 	 * 
 	 * @param iProject
 	 * @throws Exception
 	 */
-	
-	// Filter zum Ausblenden des git-Verzeichnisses beim Kopieren des Workspaces
-	private static IOFileFilter gitDirFilter = FileFilterUtils
-			.notFileFilter(FileFilterUtils.nameFileFilter(DOT_GIT));
-
-	public static void copyFromRepositoryWorkspace(IProject iProject) throws Exception
-	{
-		// Zielverzeichnis ist das IProject
-		File destDir = iProject.getLocation().toFile();
-		
-		// Quellverzeichnis ist der Workspace des lokalen Respositories
-		File srcDir = getDefaultLocalRepositoryDir();
-		
-		// Projektverzeichnis loeschen
-		FileUtils.deleteDirectory(destDir);
-		
-		// alle Resourcen vom IProjekt in den Repository Workspace kopieren
-		FileUtils.copyDirectory(srcDir, destDir, gitDirFilter);
-	}
 	
 	public static String [] getNotWritableFiles(IProject iProject)
 	{
