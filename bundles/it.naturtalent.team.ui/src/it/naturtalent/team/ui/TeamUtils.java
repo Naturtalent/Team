@@ -171,7 +171,7 @@ public class TeamUtils
 				
 				// Staging der neu im Workspace aufgenommen Resourcen
 				addCommand();
-
+				
 				// Abbruch, wenn anschliessender commit sinnlos, weil es keine Veränderungen gab 
 				if(TeamUtils.readyForCommit())
 				{
@@ -618,6 +618,9 @@ public class TeamUtils
 				return true;
 
 			if(!status.getChanged().isEmpty())
+				return true;
+			
+			if(!status.getRemoved().isEmpty())
 				return true;
 			
 		} catch (Exception e)
