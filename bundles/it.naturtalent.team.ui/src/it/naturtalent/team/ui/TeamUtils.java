@@ -172,6 +172,7 @@ public class TeamUtils
 				// Staging der neu im Workspace aufgenommen Resourcen
 				addProject(iProject);
 				
+				
 				// Abbruch, wenn anschliessender commit sinnlos, weil es keine Veränderungen gab 
 				if(TeamUtils.readyForCommit())
 				{
