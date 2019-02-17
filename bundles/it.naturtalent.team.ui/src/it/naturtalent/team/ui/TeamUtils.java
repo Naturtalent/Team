@@ -170,7 +170,7 @@ public class TeamUtils
 				deleteDiffFiles(iProject);
 				
 				// Staging der neu im Workspace aufgenommen Resourcen
-				addCommand();
+				addProject(iProject);
 				
 				// Abbruch, wenn anschliessender commit sinnlos, weil es keine Veränderungen gab 
 				if(TeamUtils.readyForCommit())
@@ -593,9 +593,17 @@ public class TeamUtils
 		if(repos != null)
 		{
 			AddCommand addCommand = new AddCommand(repos);		
+
+			String pattern = iProject.getName();
+			String filePattern = StringUtils.isEmpty(pattern) ? "." : pattern; 
 			
+			/*
 			String filePattern = iProject.getName();			
-			if(StringUtils.isEmpty(filePattern))filePattern = ".";			
+			if(StringUtils.isEmpty(filePattern))
+				filePattern = ".";
+				*/
+			
+			
 			addCommand.addFilepattern(filePattern);
 			
 			dirCache = addCommand.call();
@@ -621,6 +629,9 @@ public class TeamUtils
 				return true;
 			
 			if(!status.getRemoved().isEmpty())
+				return true;
+			
+			if(!status.getMissing().isEmpty())
 				return true;
 			
 		} catch (Exception e)
