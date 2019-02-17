@@ -170,8 +170,10 @@ public class TeamUtils
 				deleteDiffFiles(iProject);
 				
 				// Staging der neu im Workspace aufgenommen Resourcen
-				addProject(iProject);
+				//addProject(iProject);
+				addCommand();
 				
+				statusCommandTEST();
 				
 				// Abbruch, wenn anschliessender commit sinnlos, weil es keine Veränderungen gab 
 				if(TeamUtils.readyForCommit())
@@ -605,7 +607,7 @@ public class TeamUtils
 				*/
 			
 			
-			addCommand.addFilepattern(filePattern);
+			addCommand.setUpdate(false).addFilepattern(filePattern);
 			
 			dirCache = addCommand.call();
 		}
