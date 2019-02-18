@@ -54,7 +54,8 @@ public class SynchronHandler
 			} catch (Exception e)
 			{
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+				message = message + "\n" + e.getMessage();
 			}
 		}
 		

@@ -3,7 +3,8 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uUn64AuFEemlhYhAlJ9qVA" featurename="children" parentElementId="it.naturtalent.e4.project.popupmenu.explorer">
     <elements xsi:type="menu:Menu" xmi:id="_ZvvFEAuGEemlhYhAlJ9qVA" elementId="it.naturtalent.team.ui.menu.team" label="Team">
       <children xsi:type="menu:DirectMenuItem" xmi:id="_-AxOMAuGEemlhYhAlJ9qVA" elementId="it.naturtalent.team.ui.directmenuitem.connect" label="Connect" tooltip="mit dem Team Repository verbinden" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.ConnectHandler"/>
-      <children xsi:type="menu:DirectMenuItem" xmi:id="_Mt_l0A7jEemeOeckhfscWQ" elementId="it.naturtalent.team.ui.directmenuitem.sysnchronize" label="Synchronisieren" tooltip="Projekt mit dem Team Repository synchronisieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.SynchronHandler"/>
+      <children xsi:type="menu:DirectMenuItem" xmi:id="_lj5CMDOfEemasqLxg73cSw" elementId="it.naturtalent.team.ui.directmenuitem.push" label="Push" tooltip="eigene Projektstand in Team kopieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.PushHandler"/>
+      <children xsi:type="menu:DirectMenuItem" xmi:id="_5FQJADOfEemasqLxg73cSw" elementId="it.naturtalent.team.ui.directmenuitem.pull" label="Pull" tooltip="Projektdaten aus dem Team laden" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.PullHandler"/>
       <children xsi:type="menu:DirectMenuItem" xmi:id="_kt3qUBqfEemLwrAlfxULyw" elementId="it.naturtalent.team.ui.directmenuitem.disconnect" label="Disconnect" tooltip="Verbindung mit dem Team Repository abbrechen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.DisconnectHandler"/>
     </elements>
   </fragments>

@@ -167,7 +167,7 @@ public class TeamUtils
 				pcmd.setRemoteBranchName(projectName).call();
 				
 				// im Projekt geloeschte Dateien auch im Projektbranch loeschen
-				deleteDiffFiles(iProject);
+				//deleteDiffFiles(iProject);
 				
 				// Staging der neu im Workspace aufgenommen Resourcen
 				//addProject(iProject);
@@ -298,10 +298,6 @@ public class TeamUtils
 					PullCommand pcmd = git.pull();
 					pullResult = pcmd.setRemoteBranchName(projectName).call();
 					
-					// gibt es einen lokalen branch
-					if(!existLocalProjectBracnch(iProject))				
-						git.checkout().setCreateBranch(true).setName(projectName).call();
-					
 				} catch (GitAPIException e)
 				{
 					if (e instanceof CheckoutConflictException)
@@ -389,13 +385,12 @@ public class TeamUtils
 	public static void pushProject(IProject iProject) throws Exception 
 	{
 		Repository localRepos = getLocalRepository();
-		if(localRepos != null)
+		if((localRepos != null) && (iProject != null))
 		{
 			String projectName = iProject.getName();
 			String branchName = localRepos.getBranch();
 			if(StringUtils.equals(projectName, branchName))
-			{
-				// sichergestellt das Projektbranch == HEAD-Branch
+			{				
 				try (Git git = new Git(localRepos))
 				{
 					PushCommand pushCommand = git.push();
@@ -812,7 +807,6 @@ public class TeamUtils
 				String projectName = iProject.getName();
 				List<String>branchNames = getLocalBranchNames();
 				boolean createFlag = !branchNames.contains(projectName);
-				
 				git.checkout()
 				.setCreateBranch(createFlag)
 				.setName(iProject.getName())
