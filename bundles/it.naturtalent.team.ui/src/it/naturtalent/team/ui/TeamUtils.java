@@ -632,6 +632,9 @@ public class TeamUtils
 			if(!status.getMissing().isEmpty())
 				return true;
 			
+			if(!status.getUntracked().isEmpty())
+				return true;
+			
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
