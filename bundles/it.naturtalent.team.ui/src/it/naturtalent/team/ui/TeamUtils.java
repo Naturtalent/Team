@@ -1,18 +1,14 @@
 package it.naturtalent.team.ui;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -24,71 +20,45 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
-import org.eclipse.jgit.api.CheckoutCommand.Stage;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RemoteAddCommand;
-import org.eclipse.jgit.api.RemoteListCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
-import org.eclipse.jgit.blame.BlameResult;
-import org.eclipse.jgit.diff.RawText;
-import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.dircache.DirCacheTree;
-import org.eclipse.jgit.errors.NoWorkTreeException;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryBuilder;
-import org.eclipse.jgit.lib.RepositoryState;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.eclipse.jgit.merge.MergeStrategy;
-import org.eclipse.jgit.merge.ResolveMerger;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 import it.naturtalent.e4.project.ui.navigator.ResourceNavigator;
 import it.naturtalent.team.ui.dialogs.MergeConflictDialog;
@@ -222,10 +192,10 @@ public class TeamUtils
 	 * @return
 	 * @throws Exception
 	 */
-	private static String resolveConflicting(IProject iProject, List<String>conflictingPaths) throws Exception
+	public static String resolveConflicting(IProject iProject, List<String>conflictingPaths) throws Exception
 	{
 		Repository localRepos = getLocalRepository();
-		if((localRepos != null) && (iProject != null))
+		if((localRepos != null) && (iProject != null) && !conflictingPaths.isEmpty())
 		{
 			String projectName = iProject.getName();
 			try (Git git = new Git(localRepos))
@@ -283,7 +253,7 @@ public class TeamUtils
 	 * @return
 	 * @throws Exception
 	 */
-	public static PullResult pullProject(IProject iProject) 
+	public static String pullProject(IProject iProject)
 	{
 		PullResult pullResult = null;
 		Repository localRepos = getLocalRepository();
@@ -349,27 +319,16 @@ public class TeamUtils
 							return null;
 						}
 						
-						// Abbruch MergeConflictDialog
-						MessageDialog.openInformation(
-								Display.getDefault().getActiveShell(), "Team",
-								"Pull Abbruch"); // $NON-NLS-N$	
-						
 						return null;
 					}
 					
 					// Fehlermeldung
-					MessageDialog.openInformation(
-							Display.getDefault().getActiveShell(), "Team",
-							"Pull Error\n" + e.getMessage()); // $NON-NLS-N$
-					
-					return null;
+					return e.getMessage();
 				}
-				
 			}
 			catch (Exception e2)
 			{
-				System.out.println("Result: "+ pullResult.isSuccessful());
-				e2.printStackTrace();
+				return e2.getMessage();
 			}
 		}
 				
@@ -681,6 +640,23 @@ public class TeamUtils
 			}
 			
 		}
+	}
+	
+	public static List<String> getStatusConflictFiles()
+	{
+		List<String> conflictFiles = new ArrayList<String>();
+		try
+		{
+			Status status = statusCommand();
+			Iterator <String> it = status.getConflicting().iterator();
+			while(it.hasNext())
+				conflictFiles.add(it.next());
+			
+		} catch (Exception e)
+		{
+		}
+		
+		return conflictFiles;
 	}
 	
 	public static List<String> getStagedFiles(DirCache index)

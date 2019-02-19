@@ -22,7 +22,7 @@ import it.naturtalent.team.ui.TeamUtils;
 import it.naturtalent.team.ui.dialogs.MergeConflictDialog;
 
 
-public class PushHandler
+public class PushHandler3
 {
 	@Execute
 	public void execute(@Optional EPartService partService, 
@@ -34,29 +34,44 @@ public class PushHandler
 		{
 			String message = "Projektdaten wurden hochgeladen "; //$NON-NLS-N$;			
 			try
-			{						
-				// Projekt auschecken - HEAD auf den Projektbranch ausrichten
-				TeamUtils.checkoutProject(iProject);
+			{		
 				
-				TeamUtils.statusCommandTEST();
 				
-				List<String> conflictFiles = TeamUtils.getStatusConflictFiles();	
-				if(!conflictFiles.isEmpty())
+				try
+				{					
+					// Projekt auschecken - HEAD auf den Projektbranch ausrichten
+					TeamUtils.checkoutProject(iProject);
+					
+					// auschecken hat funktionert - auf Konflikte pruefen
+					List<String> conflictFiles = TeamUtils.getStatusConflictFiles();	
+					if(!conflictFiles.isEmpty())
+					{
+						// Konfliktloesung (our-/theire Files)
+						String result = TeamUtils.resolveConflicting(iProject, conflictFiles);
+						if(StringUtils.isNotEmpty(result))
+							return;		
+					}							
+					
+				} catch (Exception e)
 				{
-					// Konfliktloesung (our-/theire Files)
-					String result = TeamUtils.resolveConflicting(iProject, conflictFiles);
-					if(StringUtils.isNotEmpty(result))
-						return;		
-				}							
+					if (e instanceof CheckoutConflictException)
+					{
+						// Konfliktloesung
+						CheckoutConflictException checkoutException = (CheckoutConflictException) e;
+						List<String> conflictingPaths = checkoutException
+								.getConflictingPaths();
+						
+						String result = TeamUtils.resolveConflicting(iProject, conflictingPaths);
+						if(StringUtils.isNotEmpty(result))
+							return;
+					}
 
-				TeamUtils.statusCommandTEST();
+				}
 				
 				
-				
+
 				// die aktuellen Projektressourcen in den Workspace kopieren
 				TeamUtils.copyToRepositoryWorkspace(iProject);
-				
-				TeamUtils.statusCommandTEST();
 
 				// Abbruch, wenn anschliessender commit sinnlos, weil es
 				// keine Veränderungen gab

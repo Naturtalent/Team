@@ -19,6 +19,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -53,13 +54,17 @@ public class PullHandler2
 				TeamUtils.copyToRepositoryWorkspace(iProject);
 				
 				// Remote-Projektbranch pullen (fetch und merge) und im Workspace auschecken
-				PullResult pullResult = TeamUtils.pullProject(iProject);
+				//PullResult pullResult = TeamUtils.pullProject(iProject);
 
 				// Workspace in das Projekt kopieren
 				TeamUtils.copyFromRepositoryWorkspace(iProject);
 				
 			} catch (Exception e)
 			{
+				if (e instanceof CheckoutConflictException)
+				{
+					
+				}
 				message = "Pull Error\n"+e.getMessage();
 			}
 			

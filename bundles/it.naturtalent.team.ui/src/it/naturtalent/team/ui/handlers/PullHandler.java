@@ -3,6 +3,7 @@ package it.naturtalent.team.ui.handlers;
 
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -31,15 +32,25 @@ public class PullHandler
 				// Remote-Projektbranch pullen (fetch und merge) und im
 				// Workspace
 				// auschecken
-				PullResult pullResult = TeamUtils.pullProject(iProject);
-
-				// Workspace in das Projekt kopieren
-				TeamUtils.copyFromRepositoryWorkspace(iProject);
-
+				String result = TeamUtils.pullProject(iProject);
+				if(StringUtils.isNotEmpty(result))
+				{
+					message = "Pull Error\n" + result;
+				
+					TeamUtils.statusCommandTEST();
+				}
+				else
+				{
+					// Workspace in das Projekt kopieren
+					TeamUtils.copyFromRepositoryWorkspace(iProject);
+				}
+				
 			} catch (Exception e)
 			{
 				message = "Pull Error\n" + e.getMessage();
 			}
+			
+			
 			
 			MessageDialog.openInformation(shell, "Team downgrade", message); // $NON-NLS-N$
 		}
