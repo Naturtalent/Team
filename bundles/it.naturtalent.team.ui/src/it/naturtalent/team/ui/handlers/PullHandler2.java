@@ -51,13 +51,13 @@ public class PullHandler2
 				TeamUtils.checkoutProject(iProject);
 				
 				// die aktuellen Projektressourcen in den Workspace kopieren
-				TeamUtils.copyToRepositoryWorkspace(iProject);
+				TeamUtils.copyToRepository(iProject);
 				
 				// Remote-Projektbranch pullen (fetch und merge) und im Workspace auschecken
 				//PullResult pullResult = TeamUtils.pullProject(iProject);
 
 				// Workspace in das Projekt kopieren
-				TeamUtils.copyFromRepositoryWorkspace(iProject);
+				TeamUtils.copyFromRepository(iProject);
 				
 			} catch (Exception e)
 			{

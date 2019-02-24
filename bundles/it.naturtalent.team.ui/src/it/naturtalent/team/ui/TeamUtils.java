@@ -32,11 +32,14 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.MergeCommand;
+import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -45,6 +48,9 @@ import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.dircache.DirCacheTree;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -81,6 +87,15 @@ public class TeamUtils
 
 	// Name der Dummy Datei (wird nur fuer das Erzeugen des Master-Branch benoetigt)
 	public static final String MASTER_DUMMYFILE = "master.txt";
+	
+	public static enum State 
+	{
+		ADDED,
+		MODIFIED,
+		MISSING,
+		CONFLICTING,
+		UNTRACKED,
+	}
 	
 	/**
 	 * StatusCommand
@@ -164,7 +179,7 @@ public class TeamUtils
 					try
 					{
 						// Konflikte aufloesen 
-						String resolveMessage = resolveConflicting(iProject, conflictingPaths);
+						String resolveMessage = resolveConflictingProject(iProject, conflictingPaths);
 						if(StringUtils.isNotEmpty(resolveMessage))
 							message = resolveMessage;						
 						
@@ -192,7 +207,7 @@ public class TeamUtils
 	 * @return
 	 * @throws Exception
 	 */
-	public static String resolveConflicting(IProject iProject, List<String>conflictingPaths) throws Exception
+	public static String resolveConflictingProject(IProject iProject, List<String>conflictingPaths) throws Exception
 	{
 		Repository localRepos = getLocalRepository();
 		if((localRepos != null) && (iProject != null) && !conflictingPaths.isEmpty())
@@ -246,6 +261,55 @@ public class TeamUtils
 		}
 		
 		return "cancel conflict";
+	}
+	
+	public static String resolveConflicting(String branchName, List<String>conflictingPaths) throws Exception
+	{
+		Repository localRepos = getLocalRepository();
+		if((localRepos != null) && (StringUtils.isNotEmpty(branchName)) && !conflictingPaths.isEmpty())
+		{
+			try (Git git = new Git(localRepos))
+			{
+				MergeConflictDialog mergeDialog = new MergeConflictDialog(
+						Display.getDefault().getActiveShell(),conflictingPaths);
+				if (mergeDialog.open() == MergeConflictDialog.OK)
+				{
+					String [] theirFiles = mergeDialog.getTheirFiles();
+					if(ArrayUtils.isNotEmpty(theirFiles))
+					{
+						try
+						{
+							// auschecken der selektierten theirFiles
+							CheckoutCommand checkOutCommand = git.checkout();
+							
+							// die selektierten Files in CheckoutCommand eintragen
+							for(String conflictFile : theirFiles)								
+								checkOutCommand.addPath(conflictFile);
+							
+							// aus dem RemoteBranch auschecken
+							checkOutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
+							.setAllPaths(false)
+							.setStartPoint("origin/"+branchName)
+							.call();
+							
+						} catch (GitAPIException e1)
+						{
+							return e1.getMessage();
+						}
+					}
+					
+					List<String>ourFiles = mergeDialog.getOurFiles();
+					if(!ourFiles.isEmpty())
+					{
+						AddCommand addCommand = new AddCommand(localRepos);										
+						for(String ourFile : ourFiles)
+							addCommand.addFilepattern(ourFile);
+						addCommand.call();
+					}
+				}
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -397,68 +461,6 @@ public class TeamUtils
 
 	
 	/**
-	 * PushCommand - Alle Aenderungen (seit dem letzten in den 'origin' Server hochladen.
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public static PushResult pushRepositoryOLD() throws Exception 
-	{
-		String remote = "origin";
-		String branch = "refs/heads/master";
-		String trackingBranch = "refs/remotes/" + remote + "/master";
-		
-		Repository localRepos = getLocalRepository();
-		if(localRepos != null)
-		{
-			Git git = new Git(localRepos); 
-			
-			// Configuration checken
-			StoredConfig config = localRepos.getConfig();			
-			Set<String>localConfigs = config.getNames("branch","master");
-			if((localConfigs != null) && (localConfigs.isEmpty()))
-			{
-				// 'branch/master Sektion konfigurieren
-				config.setString("branch", "master", "merge", branch);
-				config.setString("branch", "master", "remote", remote);
-				config.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
-				config.setString("fsck", "", "missingEmail", "ignore");
-				config.save();
-			}
-			
-			Set<String>names = config.getNames("remote","origin");
-			if((names != null) && (names.isEmpty()))
-			{
-				// 'remote/origin Sektion konfigurieren
-				URL url = new URL(TEST_REMOTE_URL);				
-				URIish u = new URIish(url);
-				
-				  // add remote repo:
-			    RemoteAddCommand remoteAddCommand = git.remoteAdd();
-			    remoteAddCommand.setName("origin");
-			    remoteAddCommand.setUri(u);
-			    
-			    // you can add more settings here if needed
-			    remoteAddCommand.call();  				
-			}
-			
-		    // push to remote:
-		   PushCommand pushCommand = git.push();
-		    //pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider("username", "password"));
-		    // you can add more settings here if needed
-		    
-		   // pushen und Ergebnix in 'operationResult' zurueckgeben 
-		   PushResult pushResult = pushCommand.call().iterator().next();
-		   
-		   return pushResult;		   
-		}
-			
-		return null;
-	}
-	
-	
-	
-	/**
 	 * CommitCommand - Commit
 	 * Alle anstehenden (staging) Aenderungen werden mit einem Commit festgeschrieben.
 	 * 
@@ -477,6 +479,26 @@ public class TeamUtils
 				commit = commitCommand.call();
 		}
 		return commit;
+	}
+	
+	public static void mergeCommand(IProject iProject) throws Exception
+	{
+		Repository localRepos = getLocalRepository();
+		if((localRepos != null) && (iProject != null))
+		{
+			try(Git git = new Git(localRepos))
+			{
+				ObjectId mergeBase = localRepos.resolve("origin/"+iProject.getName());				
+				MergeCommand mergeCommand = git.merge();
+				  MergeResult merge = git.merge().
+	                        include(mergeBase).
+	                        setCommit(false).
+	                        setFastForward(MergeCommand.FastForwardMode.NO_FF).
+	                        //setSquash(false).
+	                        //setMessage("Merged changes").
+	                        call();
+			}
+		}					
 	}
 	
 
@@ -522,7 +544,7 @@ public class TeamUtils
 			}
 		}
 	}
-	
+
 	public static DirCache addCommand() throws Exception
 	{		
 		Repository repos = getLocalRepository();
@@ -534,6 +556,22 @@ public class TeamUtils
 		
 		return null;
 	}
+	
+	public static void removeCommand(List<String>removeFiles) throws Exception
+	{		
+		Repository repos = getLocalRepository();
+		if((repos != null) && (!removeFiles.isEmpty()))
+		{
+			try(Git git = new Git(repos))
+			{
+				RmCommand rmCommand = git.rm();
+				for(String removeFile : removeFiles)
+					rmCommand.addFilepattern(removeFile);			
+				rmCommand.call();
+			}	
+		}
+	}
+	
 	
 	/**
 	 * ADDCommand - Staging aller Resourcen eines Projekts
@@ -641,6 +679,95 @@ public class TeamUtils
 			
 		}
 	}
+
+	public static void staging(State state) throws Exception
+	{
+		Repository repos = getLocalRepository();
+		if (repos != null)
+		{
+			try (Git git = new Git(repos))
+			{
+				List<String> statusFiles = getStatus(state);
+				if ((statusFiles != null) && (!statusFiles.isEmpty()))
+				{
+					switch (state)
+						{
+							case ADDED:
+							case UNTRACKED:
+							case MODIFIED:
+
+								AddCommand addCommand = git.add();
+								for (String statusFile : statusFiles)
+									addCommand.addFilepattern(statusFile);
+								addCommand.call();
+								break;
+
+							case MISSING:
+
+								RmCommand rmCommand = git.rm();
+								for (String removeFile : statusFiles)
+									rmCommand.addFilepattern(removeFile);
+								rmCommand.call();
+								break;
+
+							default:
+								break;
+						}
+
+					// return addCommand.addFilepattern(".").call();
+
+				}
+			}
+		}
+	}
+		
+	public static List<String> getStatus(State state)
+	{
+		Iterator <String> it = null;
+		List<String>contents = new ArrayList<String>();
+		try
+		{
+			Status status = statusCommand();			
+			switch (state)
+				{
+					case ADDED:
+						it = status.getAdded().iterator();
+						break;
+						
+					case MODIFIED:
+						it = status.getModified().iterator();
+						break;
+
+					case CONFLICTING:
+						it = status.getConflicting().iterator();
+						break;
+
+					case MISSING:
+						it = status.getMissing().iterator();
+						break;
+
+					case UNTRACKED:
+						it = status.getUntracked().iterator();
+						break;
+
+
+					default:
+						break;
+				}
+			
+			if(it != null)
+			{
+				while(it.hasNext())
+					contents.add(it.next());
+			}
+			
+		} catch (Exception e)
+		{
+		}
+		
+		return contents;
+	}
+	
 	
 	public static List<String> getStatusConflictFiles()
 	{
@@ -658,6 +785,25 @@ public class TeamUtils
 		
 		return conflictFiles;
 	}
+	
+	public static List<String> getStatusMissingFiles()
+	{
+		List<String> conflictFiles = new ArrayList<String>();
+		try
+		{
+			Status status = statusCommand();
+			Iterator <String> it = status.getMissing().iterator();
+			while(it.hasNext())
+				conflictFiles.add(it.next());
+			
+		} catch (Exception e)
+		{
+		}
+		
+		return conflictFiles;
+	}
+
+	
 	
 	public static List<String> getStagedFiles(DirCache index)
 	{
@@ -1318,7 +1464,7 @@ public class TeamUtils
 	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void copyToRepositoryWorkspace(IProject iProject) throws Exception
+	public static void copyToRepository(IProject iProject) throws Exception
 	{
 		// Zielverzeichnis ist das Arbeitsverzeichnis des lokalen Repositories
 		File destDir = getDefaultLocalRepositoryDir();
@@ -1331,11 +1477,44 @@ public class TeamUtils
 	// Filter zum Ausblenden des git-Verzeichnisses beim Kopieren des Workspaces
 	private static IOFileFilter gitDirFilter = FileFilterUtils
 			.notFileFilter(FileFilterUtils.nameFileFilter(DOT_GIT));
+	
+	public static void cleanWorkspace()
+	{
+		// Zielverzeichnis ist das Arbeitsverzeichnis des lokalen Repositories
+		File workspaceDir = getDefaultLocalRepositoryDir();
+		
+		IOFileFilter trueFilter = FileFilterUtils.trueFileFilter();
+		Iterator<File> it = FileUtils.iterateFilesAndDirs(workspaceDir, trueFilter, gitDirFilter);
+		
+		String parentDir = workspaceDir.getName(); 
+		while(it.hasNext())
+		{
+			File file = it.next();
+			if(!file.equals(workspaceDir))
+			{
+				String parentName = file.getParentFile().getName();
+				if(StringUtils.equals(parentDir, parentName))
+				{
+					try
+					{
+						FileUtils.forceDelete(file);
+					} catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}		
+	}
 
-	public static void copyFromRepositoryWorkspace(IProject iProject) throws Exception
+	public static void copyFromRepository(IProject iProject) throws Exception
 	{
 		// Zielverzeichnis ist das IProject
 		File destDir = iProject.getLocation().toFile();
+		
+		// Zielverzeichnis loeschen
+		FileUtils.cleanDirectory(destDir);
 		
 		// Quellverzeichnis ist der Workspace des lokalen Respositories
 		File srcDir = getDefaultLocalRepositoryDir();

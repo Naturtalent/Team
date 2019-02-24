@@ -42,7 +42,7 @@ public class PullHandler
 				else
 				{
 					// Workspace in das Projekt kopieren
-					TeamUtils.copyFromRepositoryWorkspace(iProject);
+					TeamUtils.copyFromRepository(iProject);
 				}
 				
 			} catch (Exception e)

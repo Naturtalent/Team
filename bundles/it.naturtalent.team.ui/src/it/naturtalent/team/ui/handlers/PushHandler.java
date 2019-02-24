@@ -34,41 +34,45 @@ public class PushHandler
 		{
 			String message = "Projektdaten wurden hochgeladen "; //$NON-NLS-N$;			
 			try
-			{						
+			{		
+				
+				//ResetCommand()
+				//RmCommand)
+				
+				TeamUtils.statusCommandTEST();
+				
 				// Projekt auschecken - HEAD auf den Projektbranch ausrichten
 				TeamUtils.checkoutProject(iProject);
 				
 				TeamUtils.statusCommandTEST();
+								
+				TeamUtils.cleanWorkspace();
 				
-				List<String> conflictFiles = TeamUtils.getStatusConflictFiles();	
-				if(!conflictFiles.isEmpty())
-				{
-					// Konfliktloesung (our-/theire Files)
-					String result = TeamUtils.resolveConflicting(iProject, conflictFiles);
-					if(StringUtils.isNotEmpty(result))
-						return;		
-				}							
-
+				List<String>missingFiles = TeamUtils.getStatusMissingFiles();
+				TeamUtils.removeCommand(missingFiles);
+								
 				TeamUtils.statusCommandTEST();
 				
+				//TeamUtils.addCommand();
 				
+				//TeamUtils.statusCommandTEST();
 				
+				TeamUtils.commitCommand(null);
+				
+				TeamUtils.pushProject(iProject);
+								
 				// die aktuellen Projektressourcen in den Workspace kopieren
-				TeamUtils.copyToRepositoryWorkspace(iProject);
+				TeamUtils.copyToRepository(iProject);
 				
-				TeamUtils.statusCommandTEST();
+				TeamUtils.addCommand();
+				
+				// Committen
+				TeamUtils.commitCommand(null);
 
-				// Abbruch, wenn anschliessender commit sinnlos, weil es
-				// keine Veränderungen gab
-				if (TeamUtils.readyForCommit())
-				{
-					// Committen
-					TeamUtils.commitCommand(null);
-
-					// push
-					TeamUtils.pushProject(iProject);
-				}
-
+				// push
+				TeamUtils.pushProject(iProject);
+			
+				
 			} catch (Exception e)
 			{
 

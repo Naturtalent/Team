@@ -47,7 +47,7 @@ public class PushHandler3
 					if(!conflictFiles.isEmpty())
 					{
 						// Konfliktloesung (our-/theire Files)
-						String result = TeamUtils.resolveConflicting(iProject, conflictFiles);
+						String result = TeamUtils.resolveConflictingProject(iProject, conflictFiles);
 						if(StringUtils.isNotEmpty(result))
 							return;		
 					}							
@@ -61,7 +61,7 @@ public class PushHandler3
 						List<String> conflictingPaths = checkoutException
 								.getConflictingPaths();
 						
-						String result = TeamUtils.resolveConflicting(iProject, conflictingPaths);
+						String result = TeamUtils.resolveConflictingProject(iProject, conflictingPaths);
 						if(StringUtils.isNotEmpty(result))
 							return;
 					}
@@ -71,7 +71,7 @@ public class PushHandler3
 				
 
 				// die aktuellen Projektressourcen in den Workspace kopieren
-				TeamUtils.copyToRepositoryWorkspace(iProject);
+				TeamUtils.copyToRepository(iProject);
 
 				// Abbruch, wenn anschliessender commit sinnlos, weil es
 				// keine Veränderungen gab

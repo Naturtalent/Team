@@ -47,7 +47,7 @@ public class PushHandler2
 				// Projektbranch neu erzeugen
 				TeamUtils.createProjectBranch(iProject);
 				
-				TeamUtils.copyToRepositoryWorkspace(iProject);
+				TeamUtils.copyToRepository(iProject);
 				TeamUtils.addCommand();
 				TeamUtils.commitCommand("initial Project");
 				TeamUtils.pushProject(iProject);
@@ -65,7 +65,7 @@ public class PushHandler2
 			TeamUtils.checkoutProject(iProject);
 			
 			// Projektdaten in den Workspace kopieren
-			TeamUtils.copyToRepositoryWorkspace(iProject);
+			TeamUtils.copyToRepository(iProject);
 			
 			// Staging
 			TeamUtils.addCommand();
