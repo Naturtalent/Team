@@ -88,6 +88,7 @@ public class TeamUtils
 	// Name der Dummy Datei (wird nur fuer das Erzeugen des Master-Branch benoetigt)
 	public static final String MASTER_DUMMYFILE = "master.txt";
 	
+	// Status Definitionen
 	public static enum State 
 	{
 		ADDED,
@@ -97,172 +98,29 @@ public class TeamUtils
 		UNTRACKED,
 	}
 	
-	/**
-	 * StatusCommand
-	 * 
-	 * Status des lokalen Respository ermitteln 
-	 * @throws Exception
+	/*
+	 * Rueckgabe der Status eines Repositories 
 	 */
-	public static void checkStatus() throws Exception
+	public static Status statusCommand() throws Exception
 	{
-		Repository localRepos = getLocalRepository();
-		if(localRepos != null)
+		Repository repos = getLocalRepository();
+		if(repos != null)
 		{
-			Git git = new Git(localRepos); 
-			
-			StatusCommand command = git.status();
-			Status status = command.call();
-			
-			Set<String> untrackedFiles = new TreeSet<>(status.getUntracked());
-			Set<String> untrackedDirs = new TreeSet<>(
-					status.getUntrackedFolders());
-			
-		}
-	}
-	
-	public static void resetCommand() throws Exception
-	{
-		Repository localRepos = getLocalRepository();
-		if(localRepos != null)
-		{
-			try(Git git = new Git(localRepos))
+			try(Git git = new Git(repos))
 			{
-				ResetCommand resetCommand = git.reset();	
-				resetCommand.setRef("HEAD").call();
+				return git.status().call();
 			}
 		}
+		return null;
 	}
-	
+
 	/**
-	 * @param iProject
-	 * @return
-	 */
-	public static String synchronizeProject(IProject iProject) 
-	{	
-		String message = "keine erkennbare Fehler";
-		
-		Repository localRepos = getLocalRepository();
-		if((localRepos != null) && (iProject != null))
-		{
-			String projectName = iProject.getName();
-			try (Git git = new Git(localRepos))
-			{		
-				// PullCommand	ausfuehren
-				PullCommand pcmd = git.pull();
-				pcmd.setRemoteBranchName(projectName).call();
-				
-				// im Projekt geloeschte Dateien auch im Projektbranch loeschen
-				//deleteDiffFiles(iProject);
-				
-				// Staging der neu im Workspace aufgenommen Resourcen
-				//addProject(iProject);
-				addCommand();
-				
-				statusCommandTEST();
-				
-				// Abbruch, wenn anschliessender commit sinnlos, weil es keine Veränderungen gab 
-				if(TeamUtils.readyForCommit())
-				{
-					// Committen
-					TeamUtils.commitCommand(null);
-					
-					// push
-					TeamUtils.pushProject(iProject);					
-				}
-			}
-			catch (Exception e)
-			{
-				if (e instanceof CheckoutConflictException)
-				{					
-					CheckoutConflictException checkoutException = (CheckoutConflictException) e;
-					List<String> conflictingPaths = checkoutException.getConflictingPaths();
-					try
-					{
-						// Konflikte aufloesen 
-						String resolveMessage = resolveConflictingProject(iProject, conflictingPaths);
-						if(StringUtils.isNotEmpty(resolveMessage))
-							message = resolveMessage;						
-						
-					} catch (Exception e1)
-					{
-						message = e1.getMessage(); 
-					}					
-				}
-				
-				// sonstige exception
-				message = e.getMessage();
-			}
-		}
-		
-		return message;
-	}
-	
-	/**
-	 * Konfliktloesung
-	 * In einem Dialog werden die Konfliktdateinen angezeigt, es muss entschieden werden, ob die 'Teamdatei' (theirs) oder
-	 * die Eigene (ours) weiter verwenden will.
-	 *  
-	 * @param iProject
+	 * Die aus einem Mergeprozess her
+	 * @param branchName
 	 * @param conflictingPaths
 	 * @return
 	 * @throws Exception
 	 */
-	public static String resolveConflictingProject(IProject iProject, List<String>conflictingPaths) throws Exception
-	{
-		Repository localRepos = getLocalRepository();
-		if((localRepos != null) && (iProject != null) && !conflictingPaths.isEmpty())
-		{
-			String projectName = iProject.getName();
-			try (Git git = new Git(localRepos))
-			{
-				MergeConflictDialog mergeDialog = new MergeConflictDialog(
-						Display.getDefault().getActiveShell(),conflictingPaths);
-				if (mergeDialog.open() == MergeConflictDialog.OK)
-				{
-					String [] theirFiles = mergeDialog.getTheirFiles();
-					if(ArrayUtils.isNotEmpty(theirFiles))
-					{
-						try
-						{
-							// auschecken der selektierten theirFiles
-							CheckoutCommand checkOutCommand = git.checkout();
-							
-							// die selektierten Files in CheckoutCommand eintragen
-							for(String conflictFile : theirFiles)								
-								checkOutCommand.addPath(conflictFile);
-							
-							// aus dem RemoteBranch auschecken
-							checkOutCommand.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
-							.setAllPaths(false)
-							.setStartPoint("origin/"+projectName)
-							.call();
-							
-						} catch (GitAPIException e1)
-						{
-							return e1.getMessage();
-						}
-					}
-					
-					List<String>ourFiles = mergeDialog.getOurFiles();
-					if(!ourFiles.isEmpty())
-					{
-						AddCommand addCommand = new AddCommand(localRepos);										
-						for(String ourFile : ourFiles)
-							addCommand.addFilepattern(ourFile);
-						addCommand.call();
-					}
-					
-					commitCommand("resolve conflicts");
-					git.push().setForce(true).call();
-					
-					return "";
-				}
-			}
-		}
-		
-		return "cancel conflict";
-	}
-	
 	public static String resolveConflicting(String branchName, List<String>conflictingPaths) throws Exception
 	{
 		Repository localRepos = getLocalRepository();
@@ -428,24 +286,6 @@ public class TeamUtils
 	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void pullCommand() throws Exception 
-	{
-		Repository localRepos = getLocalRepository();
-		if(localRepos != null)
-		{
-			try(Git git = new Git(localRepos))
-			{
-				PullCommand pullCommand = git.pull();
-				pullCommand.call();				
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param iProject
-	 * @throws Exception
-	 */
 	public static void pushCommand() throws Exception 
 	{
 		Repository localRepos = getLocalRepository();
@@ -459,7 +299,37 @@ public class TeamUtils
 		}
 	}
 
-	
+	/**
+	 * 
+	 * @param iProject
+	 * @throws Exception
+	 */
+	public static void pullCommand() throws Exception 
+	{
+		Repository localRepos = getLocalRepository();
+		if(localRepos != null)
+		{
+			try(Git git = new Git(localRepos))
+			{
+				PullCommand pullCommand = git.pull();
+				pullCommand.call();				
+			}
+		}
+	}
+
+	public static void pullCommandOLD(IProject iproject) throws Exception 
+	{
+		Repository localRepos = getLocalRepository();
+		if((localRepos != null)  && (iproject != null))
+		{
+			try(Git git = new Git(localRepos))
+			{
+				PullCommand pullCommand = git.pull();
+				pullCommand.setRemoteBranchName(iproject.getName()).call();				
+			}
+		}
+	}
+
 	/**
 	 * CommitCommand - Commit
 	 * Alle anstehenden (staging) Aenderungen werden mit einem Commit festgeschrieben.
@@ -638,22 +508,6 @@ public class TeamUtils
 			e.printStackTrace();
 		}
 		return false;
-	}
-
-	/*
-	 * Rueckgabe der Status eines Repositories 
-	 */
-	public static Status statusCommand() throws Exception
-	{
-		Repository repos = getLocalRepository();
-		if(repos != null)
-		{
-			try(Git git = new Git(repos))
-			{
-				return git.status().call();
-			}
-		}
-		return null;
 	}
 
 	public static void statusCommandTEST() throws Exception
@@ -891,6 +745,53 @@ public class TeamUtils
 		
         return refNames;
 	}
+	
+	/**
+	 * Prueft ob IProject als Branch im lokalen Repository vorhanden ist.
+	 *  
+	 * @param iProject
+	 * @return
+	 */
+	public static boolean existRemoteProjectBracnch(IProject iProject)
+	{
+		List<String> branchNames;
+		try
+		{
+			branchNames = getRemoteBranchNames();
+			return branchNames.contains(iProject.getName());
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * Listet alle Branchnamen des lokalen Repositories auf.
+	 * 
+	 * @return
+	 * @throws Exception 
+	 */
+	public static List<String> getRemoteBranchNames () throws Exception 
+	{
+		List<String>refNames = new ArrayList<>();
+		
+		Repository localRepos = getLocalRepository();	
+		List<Ref> call;
+		try(Git git = new Git(localRepos))
+		{				
+			 Collection<Ref> refs = git.lsRemote().call();
+             for (Ref ref : refs) 
+             {
+            	String name = ref.getName();
+ 				name = StringUtils.remove(name, "refs/heads/");
+ 				refNames.add(name);	    
+             }
+		}
+		
+        return refNames;
+	}
 
 	/**
 	 * 
@@ -944,6 +845,7 @@ public class TeamUtils
 	}
 
 	/**
+	 * Einen lokalen Branch nit dem Projektnamen erzeugen.
 	 * 
 	 * @param projectName
 	 * @throws Exception
@@ -957,6 +859,12 @@ public class TeamUtils
 		}
 	}
 	
+	/**
+	 * Einen lokalen Branch nit dem Namen 'branchNamen' erzeugen.
+	 * 
+	 * @param branchName
+	 * @throws Exception
+	 */
 	public static void createLocalBranch(String branchName)  throws Exception
 	{
 		List<String> branchNames = getLocalBranchNames();		
@@ -975,34 +883,29 @@ public class TeamUtils
 	}
 	
 	/**
-	 * Ein Project wird aus dem lokalen Repository in den Arbeitsbereich ausgecheckt.
+	 * Einen remote Branch nit dem Namen 'branchNamen' erzeugen.
 	 * 
-	 * @param iProject
+	 * @param branchName
 	 * @throws Exception
 	 */
-	/*
-	public static void checkoutLocalProjectOLD(IProject iProject) throws Exception 
+	public static void createRemoteBranch(String branchName)  throws Exception
 	{
-		Repository localRepos = getLocalRepository();
-		
-		if(iProject == null)
+		List<String> branchNames = getRemoteBranchNames();			
+		if (!branchNames.contains(branchName))
 		{
-			Git git = new Git(localRepos);
-			git.checkout().setName("master").call();
-			return;
+			Repository localRepos = getLocalRepository();
+			if (localRepos != null)
+			{
+				try (Git git = new Git(localRepos))
+				{
+					// neuen Branch erzeugen
+					git.checkout().setCreateBranch(true).setName(branchName).call();
+				}
+			}
 		}
-		
-		
-		if((localRepos != null) && (iProject != null))
-		{
-			Git git = new Git(localRepos); 
-			CheckoutCommand checkOut = git.checkout();
-			
-			String branchName = iProject.getName();
-			git.checkout().setName(branchName).call();			
-		}		
 	}
-	*/
+
+	
 
 	public static void cloneRepository() throws Exception
 	{

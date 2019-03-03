@@ -5,7 +5,6 @@
       <children xsi:type="menu:DirectMenuItem" xmi:id="_-AxOMAuGEemlhYhAlJ9qVA" elementId="it.naturtalent.team.ui.directmenuitem.connect" label="Connect" tooltip="mit dem Team Repository verbinden" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.ConnectHandler"/>
       <children xsi:type="menu:DirectMenuItem" xmi:id="_kt3qUBqfEemLwrAlfxULyw" elementId="it.naturtalent.team.ui.directmenuitem.disconnect" label="Disconnect" tooltip="Verbindung mit dem Team Repository abbrechen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.DisconnectHandler"/>
       <children xsi:type="menu:DirectMenuItem" xmi:id="_8kJfoDSNEemUGu6k1v-Yiw" elementId="it.naturtalent.team.ui.directmenuitem.synchronize" label="Synchronisieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.SynchronHandler"/>
-      <children xsi:type="menu:DirectMenuItem" xmi:id="_PuWe4DU3Eemh_qp-UDuZJA" elementId="it.naturtalent.team.ui.directmenuitem.push" label="Push" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.PushHandler"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1KZJUA55EemhJaUodC9C1g" featurename="addons" parentElementId="it.naturtalent.e4.application">
