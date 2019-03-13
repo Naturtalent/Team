@@ -17,14 +17,13 @@ import org.eclipse.swt.widgets.Label;
 public class DisconnectTeamDialog extends TitleAreaDialog
 {
 	
-	private Button btnCheckLocal;
-	private boolean localDisconnect;
+	private Button btnCheckLocal;	
 	
 	private Button btnCheckRemote;
 	private boolean remoteDisconnect;
 	
 	private Button okButton;
-
+	
 	/**
 	 * Create the dialog.
 	 * @param parentShell
@@ -62,13 +61,13 @@ public class DisconnectTeamDialog extends TitleAreaDialog
 		{
 			@Override
 			public void widgetSelected(SelectionEvent e)
-			{
+			{				
 				update();
 			}
 		});
 		
 		btnCheckRemote = new Button(container, SWT.CHECK);
-		btnCheckRemote.setText("Projekt auch im öffentlichen Repository entfernen");
+		btnCheckRemote.setText("Projekt auch im öffentlichen Repository entfernen");		
 		btnCheckRemote.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
@@ -83,9 +82,8 @@ public class DisconnectTeamDialog extends TitleAreaDialog
 	
 	private void update()
 	{
-		okButton.setEnabled(true);		
-		if(!btnCheckLocal.getSelection() && !btnCheckRemote.getSelection())
-			okButton.setEnabled(false);
+		btnCheckRemote.setEnabled(btnCheckLocal.getSelection());
+		okButton.setEnabled(btnCheckLocal.getSelection());	
 	}
 
 	/**
@@ -111,22 +109,17 @@ public class DisconnectTeamDialog extends TitleAreaDialog
 
 	@Override
 	protected void okPressed()
-	{
-		localDisconnect = btnCheckLocal.getSelection();
+	{		
 		remoteDisconnect = btnCheckRemote.getSelection();
 		super.okPressed();
-	}
-
-	public boolean isLocalDisconnect()
-	{
-		return localDisconnect;
 	}
 
 	public boolean isRemoteDisconnect()
 	{
 		return remoteDisconnect;
 	}
-	
+
+
 	
 
 }

@@ -1,14 +1,19 @@
 package it.naturtalent.team.ui;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -60,6 +65,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -401,7 +407,7 @@ public class TeamUtils
 	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void deleteBranchProjectCommand(IProject iProject) throws Exception
+	public static void deleteLocalProjectBranch(IProject iProject) throws Exception
 	{		
 		Repository repos = getLocalRepository();
 		if(repos != null)
@@ -414,6 +420,26 @@ public class TeamUtils
 			}
 		}
 	}
+	
+	/**
+	 * Ein Projektbranch im lokalen Repository entfernen.
+	 * 
+	 * @param iProject
+	 * @throws Exception
+	 */
+	public static void deleteRemoteTrackingBranch(IProject iProject) throws Exception
+	{			
+		Repository repos = getLocalRepository();
+		if(repos != null)
+		{
+			try(Git git = new Git(repos))
+			{				
+				DeleteBranchCommand delCommand = git.branchDelete();
+				delCommand.setBranchNames("origin/"+iProject.getName()).setForce(true).call();
+			}
+		}
+	}
+
 
 	public static DirCache addCommand() throws Exception
 	{		
@@ -549,6 +575,7 @@ public class TeamUtils
 							case ADDED:
 							case UNTRACKED:
 							case MODIFIED:
+							case CONFLICTING:
 
 								AddCommand addCommand = git.add();
 								for (String statusFile : statusFiles)
@@ -1380,6 +1407,27 @@ public class TeamUtils
 	// Filter zum Ausblenden des git-Verzeichnisses beim Kopieren des Workspaces
 	private static IOFileFilter gitDirFilter = FileFilterUtils
 			.notFileFilter(FileFilterUtils.nameFileFilter(DOT_GIT));
+	
+	public static List<String>getInUseFiles(IProject iProject)
+	{
+		List<String>inUseFiles = new ArrayList<String>();
+		
+		// Zielverzeichnis ist das Arbeitsverzeichnis des lokalen Repositories
+		File destDir = iProject.getLocation().toFile();
+				
+		IOFileFilter trueFilter = FileFilterUtils.trueFileFilter();
+		Iterator<File> it = FileUtils.iterateFiles(destDir, trueFilter, gitDirFilter);
+		while(it.hasNext())
+		{
+			File file = it.next();
+			System.out.println(file.getName());
+			
+			
+
+		}
+		
+		return inUseFiles;
+	}
 	
 	public static void cleanWorkspace()
 	{
