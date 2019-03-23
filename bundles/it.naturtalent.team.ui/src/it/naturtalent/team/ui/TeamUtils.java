@@ -34,9 +34,11 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PullCommand;
@@ -269,7 +271,7 @@ public class TeamUtils
 	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void pushProject(IProject iProject) throws Exception 
+	public static void pushProjectBranch(IProject iProject) throws Exception 
 	{
 		Repository localRepos = getLocalRepository();
 		if((localRepos != null) && (iProject != null))
@@ -422,7 +424,7 @@ public class TeamUtils
 	}
 	
 	/**
-	 * Ein Projektbranch im lokalen Repository entfernen.
+	 * Projektbezogener Tracking Branch im lokalen Repository entfernen
 	 * 
 	 * @param iProject
 	 * @throws Exception
@@ -436,6 +438,27 @@ public class TeamUtils
 			{				
 				DeleteBranchCommand delCommand = git.branchDelete();
 				delCommand.setBranchNames("origin/"+iProject.getName()).setForce(true).call();
+			}
+		}
+	}
+	
+	/**
+	 * Einen Projektbranch im Remote-Reopository entfernen.
+	 *  
+	 * @param iProject
+	 * @throws Exception
+	 */
+	public static void deleteRemoteProjectBranch(IProject iProject) throws Exception
+	{
+		Repository repos = getLocalRepository();
+		if(repos != null)
+		{
+			try(Git git = new Git(repos))
+			{				
+				PushCommand pushCommand = git.push();
+				pushCommand.setRemote("origin")
+				.add(":refs/heads/"+iProject.getName())
+				.call();		
 			}
 		}
 	}
@@ -774,6 +797,33 @@ public class TeamUtils
 	}
 	
 	/**
+	 * Listet alle Branchnamen des lokalen Repositories auf.
+	 * 
+	 * @return
+	 * @throws Exception 
+	 */
+	public static List<String> getRemoteTrackingBranches () throws Exception 
+	{
+		List<String>refNames = new ArrayList<>();
+		
+		Repository localRepos = getLocalRepository();	
+		List<Ref> call;
+		try(Git git = new Git(localRepos))
+		{				
+			call = git.branchList().setListMode(ListBranchCommand.ListMode.REMOTE).call();
+			for (Ref ref : call) 
+			{
+				String name = ref.getName();
+				name = StringUtils.remove(name, "refs/remotes/origin/");
+				refNames.add(name);	            
+			}
+		}
+		
+        return refNames;
+	}
+
+	
+	/**
 	 * Prueft ob IProject als Branch im lokalen Repository vorhanden ist.
 	 *  
 	 * @param iProject
@@ -870,6 +920,27 @@ public class TeamUtils
 			}
 		}
 	}
+	
+	public static void checkoutProject(String projectName) throws Exception 
+	{
+		Repository localRepos = getLocalRepository();		
+		if(localRepos != null)
+		{
+			try (Git git = new Git(localRepos))
+			{
+				List<String>branchNames = getLocalBranchNames();
+				boolean createFlag = !branchNames.contains(projectName);
+				git.checkout()
+				.setCreateBranch(createFlag)
+				.setName(projectName)
+				.setUpstreamMode(SetupUpstreamMode.SET_UPSTREAM)
+				.setStartPoint("origin/"+projectName)
+				.setForce(true)
+				.call();
+			}
+		}
+	}
+
 
 	/**
 	 * Einen lokalen Branch nit dem Projektnamen erzeugen.
@@ -910,23 +981,66 @@ public class TeamUtils
 	}
 	
 	/**
-	 * Einen remote Branch nit dem Namen 'branchNamen' erzeugen.
+	 * Ueberprueft, ob im lokalen Repository ein RemoteTrackingBranch fuer den Branch 'branchName' vorhanden ist.
+	 * Ist dies nicht der Fall, wird durch ein 'fetch' - origin Command TrackingBranches aller im Remoterepository 
+	 * gespeicherten Branches generiert.  
 	 * 
-	 * @param branchName
+	 * @param iProject
 	 * @throws Exception
 	 */
-	public static void createRemoteBranch(String branchName)  throws Exception
-	{
-		List<String> branchNames = getRemoteBranchNames();			
-		if (!branchNames.contains(branchName))
+	public static void checkRemoteTrackingBranch(String branchName)  throws Exception
+	{	
+		// existiert ein RemoteTrackingBranch
+		List<String>remoteTrackingNames = getRemoteTrackingBranches();
+		if(!remoteTrackingNames.contains(branchName))
 		{
+			// durch 'fetch' - origin alle verfuegbaren RemoteTrackingBranch 
 			Repository localRepos = getLocalRepository();
 			if (localRepos != null)
 			{
 				try (Git git = new Git(localRepos))
 				{
-					// neuen Branch erzeugen
-					git.checkout().setCreateBranch(true).setName(branchName).call();
+					git.fetch().setRemote("origin").setCheckFetchedObjects(true).call();
+				}
+			}
+		}	
+	}
+	
+	/**
+	 * Einen remote Branch nit dem Namen 'branchNamen' erzeugen.
+	 * 
+	 * @param iProject
+	 * @throws Exception
+	 */
+	public static void createRemoteBranch(IProject iProject)  throws Exception
+	{	
+		if(iProject == null)
+			return;
+		
+		String branchName = iProject.getName();
+		
+		// existiert der Projectbranch im entferten Repository
+		List<String>remoteBranchNames = getRemoteBranchNames();
+		if(!remoteBranchNames.contains(branchName))
+		{
+			TeamUtils.cleanWorkspace();
+			TeamUtils.copyToRepository(iProject);
+			TeamUtils.addCommand();
+			TeamUtils.commitCommand("initial");
+			TeamUtils.pushProjectBranch(iProject);
+		}
+		
+		// existiert ein RemoteTrackingBranch
+		List<String>remoteTrackingNames = getRemoteTrackingBranches();
+		if(!remoteTrackingNames.contains(branchName))
+		{
+			// durch 'fetch' - origin alle verfuegbaren RemoteTrackingBranch 
+			Repository localRepos = getLocalRepository();
+			if (localRepos != null)
+			{
+				try (Git git = new Git(localRepos))
+				{
+					git.fetch().setRemote("origin").setCheckFetchedObjects(true).call();
 				}
 			}
 		}

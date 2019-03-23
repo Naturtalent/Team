@@ -1,5 +1,7 @@
 package it.naturtalent.team.ui.actions;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.eclipse.core.resources.IProject;
@@ -28,8 +30,13 @@ public class ConnectAction extends Action
 		{
 			try
 			{
+				String branchName = iProject.getName();
+								
 				// Projektbranch erzeugen - HEAD auf den Projektbranch ausrichten
-				TeamUtils.createProjectBranch(iProject);
+				TeamUtils.createLocalBranch(branchName);
+				
+				TeamUtils.createRemoteBranch(iProject);
+				
 				
 			} catch (Exception e)
 			{				

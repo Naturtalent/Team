@@ -106,7 +106,7 @@ public class SynchronHandlerProgressMonitor
 							TeamUtils.commitCommand("initial");
 							
 							// pushen  (RemoteBranch anlegen)
-							TeamUtils.pushProject(iProject);					
+							TeamUtils.pushProjectBranch(iProject);					
 
 							return Status.OK_STATUS;
 						}

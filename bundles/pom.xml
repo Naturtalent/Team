@@ -14,6 +14,8 @@
 
 	<modules>		
 		<module>it.naturtalent.team.base</module>
+		<module>it.naturtalent.team.model</module>
+		<module>it.naturtalent.team.model.edit</module>
 		<module>it.naturtalent.team.ui</module>
 	</modules>
 

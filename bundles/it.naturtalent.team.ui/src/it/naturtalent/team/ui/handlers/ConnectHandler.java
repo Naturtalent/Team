@@ -29,7 +29,7 @@ public class ConnectHandler
 		if(iProject != null)
 		{
 			if (MessageDialog.openQuestion(shell, "Team","Projekt beim Team anmelden")) //$NON-NLS-N$
-			{				
+			{	
 				ConnectAction connectAction = ContextInjectionFactory
 						.make(ConnectAction.class, context);
 				connectAction.run();

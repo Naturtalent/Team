@@ -22,10 +22,11 @@ public class SynchronizeAction extends Action
 	
 	private String message = "Projektsychronisierung beendet"; //$NON-NLS-N$;
 	
+
 	@PostConstruct
 	public void postConstruction(@Optional EPartService partService)
 	{
-		iProject = TeamUtils.getSelectedIProject(partService);		
+		iProject = TeamUtils.getSelectedIProject(partService);			
 	}
 
 	@Override
@@ -41,6 +42,7 @@ public class SynchronizeAction extends Action
 				// die aktuellen Projektressourcen in den Workspace kopieren
 				TeamUtils.cleanWorkspace();
 				TeamUtils.copyToRepository(iProject);
+				
 				
 				// Projektdaten pullen
 				try

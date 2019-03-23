@@ -35,7 +35,7 @@ public class DisconnectHandler
 			{
 				DisconnectAction disconnectAction = ContextInjectionFactory
 						.make(DisconnectAction.class, context);
-				//disconnectAction.run();
+				disconnectAction.run();
 				
 				if(disconnectDialog.isRemoteDisconnect())
 					disconnectAction.disconnectRemote();

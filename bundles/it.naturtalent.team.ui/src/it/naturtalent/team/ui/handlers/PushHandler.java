@@ -59,7 +59,7 @@ public class PushHandler
 				
 				TeamUtils.commitCommand(null);
 				
-				TeamUtils.pushProject(iProject);
+				TeamUtils.pushProjectBranch(iProject);
 								
 				// die aktuellen Projektressourcen in den Workspace kopieren
 				TeamUtils.copyToRepository(iProject);
@@ -70,7 +70,7 @@ public class PushHandler
 				TeamUtils.commitCommand(null);
 
 				// push
-				TeamUtils.pushProject(iProject);
+				TeamUtils.pushProjectBranch(iProject);
 			
 				
 			} catch (Exception e)

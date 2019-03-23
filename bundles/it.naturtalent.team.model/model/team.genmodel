@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/it.naturtalent.team.model/src" modelPluginID="it.naturtalent.team.model"
+    modelName="Team" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>team.ecore</foreignModel>
+  <genPackages prefix="Team" basePackage="it.naturtalent.team.model" disposableProviderFactory="true"
+      ecorePackage="team.ecore#/">
+    <genClasses ecoreClass="team.ecore#//ReposData">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//ReposData/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//ReposData/remoteURI"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference team.ecore#//ReposData/branches"/>
+    </genClasses>
+    <genClasses ecoreClass="team.ecore#//Branch">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//Branch/name"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

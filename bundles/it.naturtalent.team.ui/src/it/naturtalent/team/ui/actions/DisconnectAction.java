@@ -42,18 +42,23 @@ public class DisconnectAction extends Action
 		}
 	}
 	
+	/**
+	 * Remote Projektbrachn loeschen
+	 */
 	public void disconnectRemote()
-	{
-		/*
-		try
+	{	
+		if(iProject != null)
 		{
-			TeamUtils.deleteRemoteTrackingBranch(iProject);
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		*/
+			try
+			{
+				TeamUtils.deleteRemoteProjectBranch(iProject);
+
+			} catch (Exception e)
+			{
+				// e.printStackTrace();
+				message = message + "\n" + e.getMessage();
+			}
+		}		
 	}
 	
 	public String getMessage()

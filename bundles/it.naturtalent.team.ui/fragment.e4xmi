@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_S_YoEAuFEemlhYhAlJ9qVA">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_S_YoEAuFEemlhYhAlJ9qVA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uUn64AuFEemlhYhAlJ9qVA" featurename="children" parentElementId="it.naturtalent.e4.project.popupmenu.explorer">
     <elements xsi:type="menu:Menu" xmi:id="_ZvvFEAuGEemlhYhAlJ9qVA" elementId="it.naturtalent.team.ui.menu.team" label="Team">
       <children xsi:type="menu:DirectMenuItem" xmi:id="_-AxOMAuGEemlhYhAlJ9qVA" elementId="it.naturtalent.team.ui.directmenuitem.connect" label="Connect" tooltip="mit dem Team Repository verbinden" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.ConnectHandler"/>
@@ -9,5 +9,12 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1KZJUA55EemhJaUodC9C1g" featurename="addons" parentElementId="it.naturtalent.e4.application">
     <elements xsi:type="application:Addon" xmi:id="_5ygj8A55EemhJaUodC9C1g" elementId="it.naturtalent.team.ui.addon.AddOn" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.TeamAddon"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-QxNcEldEemcCvx4egRPKQ" featurename="children" parentElementId="it.naturtalent.e4.project.ui.partstack.1">
+    <elements xsi:type="basic:Part" xmi:id="_e63FEEleEemcCvx4egRPKQ" elementId="it.naturtalent.team.ui.part.remote" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.parts.RemoteRepositoryView" label="Repository">
+      <toolbar xmi:id="_l4jXgEvxEemXD_-3PzU9fw" elementId="it.naturtalent.team.ui.toolbar.0">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_oS5TAEvxEemXD_-3PzU9fw" elementId="it.naturtalent.team.ui.directtoolitem.cloneprojekt" label="Clone Projekt" iconURI="icon://COMMAND_UNDO" tooltip="Projekt in Workspace kopieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.CloneHandler"/>
+      </toolbar>
+    </elements>
   </fragments>
 </fragment:ModelFragments>
