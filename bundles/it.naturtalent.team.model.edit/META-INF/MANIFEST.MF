@@ -13,5 +13,8 @@ Export-Package: team.provider,
  it.naturtalent.team.model.team.provider
 Require-Bundle: org.eclipse.core.runtime,
  it.naturtalent.team.model;visibility:=reexport,
- org.eclipse.emf.edit;visibility:=reexport
+ org.eclipse.emf.edit;visibility:=reexport,
+ it.wp.common.io,
+ it.naturtalent.icons,
+ org.eclipse.swt
 Bundle-ActivationPolicy: lazy

@@ -36,10 +36,25 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.0.v2018042
  org.eclipse.emf.ecp.ui.view.swt,
  it.naturtalent.e4.project,
  org.eclipse.ui.workbench,
- org.eclipse.e4.ui.workbench.swt
+ org.eclipse.e4.ui.workbench.swt,
+ it.naturtalent.icons,
+ org.eclipse.emfforms.swt.core.di,
+ org.eclipse.emf.ecp.view.table.model,
+ org.eclipse.emf.ecp.view.table.ui.swt,
+ org.eclipse.emf.ecp.view.template.model,
+ org.eclipse.emf.ecp.view.util.swt,
+ org.eclipse.emfforms.core.services.editsupport,
+ org.eclipse.emfforms.core.services.emf,
+ org.eclipse.emf.ecp.view.core.swt;bundle-version="1.17.0",
+ org.eclipse.emf.databinding,
+ org.eclipse.emf.ecp.edit.swt,
+ org.eclipse.emf.edit,
+ org.eclipse.e4.ui.di
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: it.naturtalent.team.ui
 Import-Package: it.naturtalent.e4.project.model.project,
   javax.annotation;version="1.0.0";resolution:=optional,
   javax.inject;version="1.0.0"
 Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/branchtablerenderer.xml,
+ OSGI-INF/reposviewtablecontrolservice.xml

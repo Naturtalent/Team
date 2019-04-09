@@ -1133,7 +1133,7 @@ public class TeamUtils
 		FileUtils.cleanDirectory(gitDir);
 		
 		// das Reoository erzeugen
-		localRepos = createLocalRepository(gitDir);
+		localRepos = createLocalRepository(gitDir,false);
 		
 		// Configuration fuer das Pushen 
 		StoredConfig config = localRepos.getConfig();			
@@ -1180,7 +1180,7 @@ public class TeamUtils
 		FileUtils.cleanDirectory(gitDir);
 		
 		// das Reoository erzeugen
-		localRepos = createLocalRepository(gitDir);
+		localRepos = createLocalRepository(gitDir, false);
 		
 		return localRepos;
 	}
@@ -1195,11 +1195,11 @@ public class TeamUtils
 	 * @throws GitAPIException
 	 * @throws IOException
 	 */
-	private static Repository createLocalRepository(File dir) throws IllegalStateException, GitAPIException, IOException
+	public static Repository createLocalRepository(File dir, boolean bare) throws IllegalStateException, GitAPIException, IOException
 	{		
 		File gitDir = Git.init()
 				.setDirectory(dir)
-				.setBare(false).call()
+				.setBare(bare).call()
 				.getRepository().getDirectory();		
 		
 		return FileRepositoryBuilder.create(gitDir);			

@@ -19,6 +19,8 @@ import it.naturtalent.e4.project.IResourceNavigator;
 import it.naturtalent.e4.project.ui.dialogs.ConfigureWorkingSetDialog;
 import it.naturtalent.e4.project.ui.dialogs.SelectWorkingSetDialog;
 import it.naturtalent.e4.project.ui.ws.IWorkingSetManager;
+import it.naturtalent.icons.core.Icon;
+import it.naturtalent.icons.core.IconSize;
 
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Group;
@@ -58,6 +60,7 @@ public class CloneTeamDialog extends TitleAreaDialog
 	@Override
 	protected Control createDialogArea(Composite parent)
 	{
+		setTitleImage(Icon.WIZBAN_PULL_GIT.getImage(IconSize._75x66_TitleDialogIconSize));
 		setMessage("Ein Projekt aus dem Teamrepository kopieren.");
 		setTitle("Ein Projekt klonen");
 		Composite area = (Composite) super.createDialogArea(parent);

@@ -9,17 +9,25 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EObjectValidator.DynamicEDataTypeValidator;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecp.ui.view.ECPRendererException;
 import org.eclipse.emf.ecp.ui.view.swt.ECPSWTView;
 import org.eclipse.emf.ecp.ui.view.swt.ECPSWTViewRenderer;
+import org.eclipse.emf.ecp.view.spi.context.ViewModelContext;
+import org.eclipse.emf.ecp.view.spi.model.ModelChangeListener;
+import org.eclipse.emf.ecp.view.spi.model.ModelChangeNotification;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -38,12 +46,17 @@ import it.naturtalent.team.model.team.ReposData;
 import it.naturtalent.team.model.team.TeamPackage;
 import it.naturtalent.team.ui.TeamModelUtils;
 import it.naturtalent.team.ui.TeamUtils;
+import it.naturtalent.team.ui.actions.CloneAction;
 import it.naturtalent.team.ui.preferences.TeamPreferenceAdapter;
 
 
 public class RemoteRepositoryView
 {
 	private ReposData reposData;
+	
+	private ViewModelContext viewModelContext;
+	
+	private IEclipseContext context;
 	
 	@Inject
 	public RemoteRepositoryView()
@@ -55,9 +68,11 @@ public class RemoteRepositoryView
 	public void postConstruct(Composite parent,
 			@Preference(nodePath = TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE, value = TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI) String reposDir,
 			@Named(IServiceConstants.ACTIVE_SHELL) @Optional Shell shell,
-			@Optional ESelectionService selectionService)
+			@Optional ESelectionService selectionService, @Optional IEclipseContext context)
 	{
 
+		this.context = context;
+		
 		BusyIndicator.showWhile(shell.getDisplay(), () -> 
 		{
 			reposData = TeamModelUtils.getRemoteReposData();
@@ -68,27 +83,12 @@ public class RemoteRepositoryView
 		
 		try
 		{
-			ECPSWTView view = ECPSWTViewRenderer.INSTANCE.render(parent, reposData);
+			ECPSWTView view = ECPSWTViewRenderer.INSTANCE.render(parent, reposData);			
+			viewModelContext = view.getViewModelContext();
 			
-			Composite comp = (Composite) view.getSWTControl().getParent().getChildren()[0];
-			Table table = seekTableCtrlRekursiv(comp);
-			if(table != null)
-			{
-				table.addSelectionListener(new SelectionAdapter()
-				{
-					@Override
-					public void widgetSelected(SelectionEvent e)
-					{
-						if (e.item instanceof TableItem)
-						{
-							TableItem tableItem = (TableItem) e.item;
-							Object obj = tableItem.getData();
-							if (obj instanceof Branch)
-								selectionService.setSelection(obj);
-						}
-					}					
-				});
-			}
+		
+			
+			
 		}
 
 		catch (ECPRendererException e)
@@ -99,6 +99,32 @@ public class RemoteRepositoryView
 
 	}
 	
+	@Inject
+	@Optional
+	public void handleRefreshRequest(@UIEventTopic(TeamModelUtils.REFRESH_PROPJECTBRANCH_VIEW_EVENT) ReposData reposData)
+	{		
+		if((reposData != null) && (viewModelContext != null))
+			viewModelContext.changeDomainModel(reposData);	
+	}
+
+	@Inject
+	@Optional
+	public void handleCloneRequest(@UIEventTopic(TeamModelUtils.CLONE_PROPJECTBRANCH_VIEW_EVENT) Object cloneObject)
+	{		
+		if (cloneObject instanceof Branch)
+		{
+			Branch branch = (Branch) cloneObject;			
+			IProject iProject =  TeamModelUtils.getProjectBranchProject(branch);
+			
+			// Projektbranch wird im Arbeitsverzeichnis ausgecheckt
+			CloneAction cloneAction =  ContextInjectionFactory.make(CloneAction.class, context);
+			cloneAction.run();
+			
+			System.out.println(branch);
+			
+		}
+	}
+
 	/*
 	 * 
 	 */

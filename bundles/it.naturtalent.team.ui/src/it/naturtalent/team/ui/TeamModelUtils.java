@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -29,6 +30,26 @@ import it.naturtalent.team.model.team.TeamPackage;
 public class TeamModelUtils
 {
 
+	public static final String REFRESH_PROPJECTBRANCH_VIEW_EVENT = "refreshprojectbranchview";
+	public static final String CLONE_PROPJECTBRANCH_VIEW_EVENT = "cloneprojectbranchview";
+	
+	/**
+	 * Gibt das durch Branch-Id referenzierte Projekt zurueck.
+	 * 
+	 * @param projectBranch
+	 * @return
+	 */
+	public static IProject getProjectBranchProject(Branch projectBranch)
+	{
+		if((projectBranch != null) && StringUtils.isNotEmpty(projectBranch.getId()))
+		{			
+			IProject iProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectBranch.getId());
+			return (iProject.exists() ? iProject : null);  
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * 
 	 * @return

@@ -13,7 +13,9 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-QxNcEldEemcCvx4egRPKQ" featurename="children" parentElementId="it.naturtalent.e4.project.ui.partstack.1">
     <elements xsi:type="basic:Part" xmi:id="_e63FEEleEemcCvx4egRPKQ" elementId="it.naturtalent.team.ui.part.remote" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.parts.RemoteRepositoryView" label="Repository">
       <toolbar xmi:id="_l4jXgEvxEemXD_-3PzU9fw" elementId="it.naturtalent.team.ui.toolbar.0">
-        <children xsi:type="menu:DirectToolItem" xmi:id="_oS5TAEvxEemXD_-3PzU9fw" elementId="it.naturtalent.team.ui.directtoolitem.cloneprojekt" label="Clone Projekt" iconURI="icon://COMMAND_UNDO" tooltip="Projekt in Workspace kopieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.CloneHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_oS5TAEvxEemXD_-3PzU9fw" elementId="it.naturtalent.team.ui.directtoolitem.cloneprojekt" label="Clone Projekt" iconURI="icon://COMMAND_CLONE_GIT" tooltip="Projekt in Workspace kopieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.CloneHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_aCauQE4mEemI6IeZ4DeTiw" elementId="it.naturtalent.team.ui.directtoolitem.refresh" label="Refresh" iconURI="icon://COMMAND_REFRESH_GIT" tooltip="View aktualisieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.RefreshHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_xTaoME4pEemI6IeZ4DeTiw" elementId="it.naturtalent.team.ui.directtoolitem.createRepository" label="CreateRepository" iconURI="icon://COMMAND_CREATE_REPOSITORY" tooltip="ein Repository erzeugen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.CreateRepostioryHandler"/>
       </toolbar>
     </elements>
   </fragments>
