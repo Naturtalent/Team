@@ -38,6 +38,16 @@ public class BranchTableControlRendererService implements EMFFormsDIRendererServ
 		this.databindingService = databindingService;
 	}
 	
+	/**
+	 * Called by the initializer to set the ReportService.
+	 *
+	 * @param reportService The ReportService
+	 */
+	protected void setReportService(ReportService reportService) 
+	{
+		this.reportService = reportService;		
+	}
+	
 	@Override
 	public double isApplicable(VElement vElement,
 			ViewModelContext viewModelContext)

@@ -20,7 +20,7 @@ public class RefreshHandler
 	
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) @Optional Shell shell, @Optional IEventBroker eventBroker,
-			@Preference(nodePath = TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE, value = TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI) String reposDir)
+			@Preference(nodePath = TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE, value = TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY) String reposDir)
 	{
 		
 		BusyIndicator.showWhile(shell.getDisplay(), () -> 

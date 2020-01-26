@@ -42,15 +42,16 @@ public class TeamPreferenceComposite extends Composite
 		super(parent, style);		
 		setLayout(null);
 					
-		// Label Teamverzeichnis (lokalen Repository)
+		// Label Root-Repositoriesverzeichnis
 		Label lblReposDir = new Label(this, SWT.NONE);
 		lblReposDir.setBounds(5, 15, 400, 17);
-		lblReposDir.setText("Teamverzeichnis (lokales Git-Repository)");
+		lblReposDir.setText("Root-Verzeichnis aller Repositories");
 		
 		//  Speicherort des Arbeitsbereichs des lokalen Repositories 				
 		directoryEditorComposite = new DirectoryEditorComposite(this, SWT.NONE);
 		directoryEditorComposite.setBounds(5, 40, 550, 60);
 
+		/*
 		// Label (remote Repository)
 		Label lblRemoteRepos = new Label(this, SWT.NONE);
 		lblRemoteRepos.setBounds(5, 165, 400, 17);
@@ -59,6 +60,7 @@ public class TeamPreferenceComposite extends Composite
 		// Speicherort des remote Repository auswählen	
 		remoteDirectoryEditorComposite = new SelectRemoteReposDir(this, SWT.NONE);
 		remoteDirectoryEditorComposite.setBounds(5, 190, 550, 60);
+		*/
 		
 	}
 

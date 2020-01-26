@@ -12,7 +12,8 @@
 		<version>1.0.0-SNAPSHOT</version>	
 	</parent>
 		
-	<modules>		
+	<modules>	
+		<module>it.naturtalent.team.target</module>	
 		<module>it.naturtalent.team.update</module>	
 	</modules>
 	

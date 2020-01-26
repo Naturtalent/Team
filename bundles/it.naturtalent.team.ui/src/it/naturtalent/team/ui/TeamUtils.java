@@ -1,21 +1,15 @@
 package it.naturtalent.team.ui;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.CanWriteFileFilter;
@@ -26,15 +20,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
-import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
@@ -45,19 +40,14 @@ import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RemoteAddCommand;
-import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.StatusCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.dircache.DirCacheTree;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -66,14 +56,14 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.swt.widgets.Display;
 
+import it.naturtalent.e4.preferences.IPreferenceRegistry;
+import it.naturtalent.e4.project.INtProject;
 import it.naturtalent.e4.project.ui.navigator.ResourceNavigator;
 import it.naturtalent.team.ui.dialogs.MergeConflictDialog;
 import it.naturtalent.team.ui.preferences.TeamPreferenceAdapter;
@@ -105,6 +95,97 @@ public class TeamUtils
 		CONFLICTING,
 		UNTRACKED,
 	}
+	
+	public static DirCache addCommand(IProject iProject) throws Exception
+	{		
+		DirCache dirCache = null;
+		Repository repos = getProjectRepos(iProject);
+		if(repos != null)
+		{
+			AddCommand addCommand = new AddCommand(repos);		
+			dirCache =  addCommand.addFilepattern(".").call();
+		}
+		
+		return dirCache;
+	}
+
+	
+	public static Repository getProjectRepos(IProject iProject)
+	{
+		File localRepos = getRootLocalRepos();
+		return (localRepos != null) ? getProjectRepos(localRepos, iProject) : null;
+	}
+
+	/**
+	 * Rueckgabbe des Projekt-Repositorys
+	 * @param localReposDir
+	 * @param iProject
+	 * @return
+	 */
+	public static Repository getProjectRepos(File localReposDir, IProject iProject)
+	{
+		Repository repository = null;
+		File gitDir = new File(getRootLocalRepos(), iProject.getName());
+		gitDir = new File(gitDir, DOT_GIT);
+		FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
+		
+		try
+		{
+			repository = repositoryBuilder.setGitDir(gitDir)
+						.readEnvironment() // scan environment GIT_* variables
+		                .findGitDir() // scan up the file system tree
+		                .setMustExist(true)
+		                .build();		
+	} catch (IOException e)
+	{
+			MessageDialog.openError(Display.getCurrent().getActiveShell(),
+					"Add Command Errer\n", e.getMessage()); // $NON-NLS-N$
+	}
+		return repository;
+	}
+
+	/**
+	 * Prueft, ob fuer das Project ein Repository defoniert ist.
+	 * Gecheckt wird nur ob ein entsprechendes Verzeichnis (Workspace) in Rootverzeichnis existiert.
+	 * 
+	 * @param iProject
+	 * @return
+	 */
+	public static boolean existProjectRepository(IProject iProject)
+	{
+		File projectReposDir =  getProjectReposDirectory(iProject);
+		return (projectReposDir.exists());		
+	}
+
+	/**
+	 * Rueckgabe des Verzeichnisses, in dem das Project-Repository gespeichert ist,
+	 * Dies ist  identisch mit dem Workspace des lokalen Repository.
+	 * 
+	 * @param iProject
+	 * @return
+	 */
+	public static File getProjectReposDirectory(IProject iProject)
+	{
+		return new File(getRootLocalRepos(), iProject.getName());
+	}
+
+	/**
+	 * Rueckgabe des Verzeichnisses, in dem alle Project-Repositories gespeichert werden.
+	 * Root der lokalen Repositories.
+	 * @return
+	 */
+	public static File getRootLocalRepos()
+	{
+		File localReposDir = null;
+		
+		IEclipsePreferences prefNode = InstanceScope.INSTANCE.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);
+		String rootReops = prefNode.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null);
+		if(rootReops != null)
+			localReposDir = new File(rootReops, TeamPreferenceAdapter.LOCAL_REPOSITORIESNAME);
+		
+		return localReposDir;
+	}
+	
 	
 	/*
 	 * Rueckgabe der Status eines Repositories 
@@ -176,6 +257,18 @@ public class TeamUtils
 			}
 		}
 		return "";
+	}
+
+	public static DirCache addCommand() throws Exception
+	{		
+		Repository repos = getLocalRepository();
+		if(repos != null)
+		{
+			AddCommand addCommand = new AddCommand(repos);		
+			return addCommand.addFilepattern(".").call();
+		}
+		
+		return null;
 	}
 
 	/**
@@ -464,18 +557,6 @@ public class TeamUtils
 	}
 
 
-	public static DirCache addCommand() throws Exception
-	{		
-		Repository repos = getLocalRepository();
-		if(repos != null)
-		{
-			AddCommand addCommand = new AddCommand(repos);		
-			return addCommand.addFilepattern(".").call();
-		}
-		
-		return null;
-	}
-	
 	public static void removeCommand(List<String>removeFiles) throws Exception
 	{		
 		Repository repos = getLocalRepository();
@@ -1215,9 +1296,35 @@ public class TeamUtils
 		// Remoteverzeichnis aus den Praeferenzen
 		String remoteDirURI = InstanceScope.INSTANCE
 				.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE)
-				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REMOTEREPOS_URI, null);
+				.get(TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY, null);
 
 		return createRemoteRepository(remoteDirURI);		
+	}
+
+	/**
+	 * Ein projectspezifisches-RemoteRepository im RemotePrepository-Verzeichnis erzeugen.
+	 * 
+	 * 
+	 * @param remoteDirURI
+	 * @param iProject
+	 * @return
+	 * @throws Exception
+	 */
+	public static Repository createRemoteRepository(String remoteDirURI, IProject iProject) throws Exception
+	{
+		Repository remoteRepository = null;
+		
+		if(iProject.exists())
+		{
+			// projektsprezifisches Repo
+			String projectDir = remoteDirURI+File.separator+iProject.getName();
+			remoteRepository =  createRemoteRepository(projectDir);
+			
+			String name = iProject.getPersistentProperty(INtProject.projectNameQualifiedName);
+			
+		}
+		
+		return remoteRepository;
 	}
 	
 	/**
@@ -1237,6 +1344,7 @@ public class TeamUtils
 			if(!remoteDir.exists())
 				remoteDir.mkdirs();
 			
+			// bare Repository
 			File gitDir = Git.init().setDirectory(remoteDir).setBare(true).call().getRepository().getDirectory();
 			remoteRepository = FileRepositoryBuilder.create(gitDir);			
 		}
@@ -1461,12 +1569,12 @@ public class TeamUtils
 	{
 		String defaultReposDir = DefaultScope.INSTANCE
 				.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE)
-				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, null);
+				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null);
 		
 		// Verzeichnis des lokalen Repositories
 		String reposDir = InstanceScope.INSTANCE
 				.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE)
-				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, defaultReposDir);
+				.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, defaultReposDir);
 		return new File(reposDir);	
 	}
 	
@@ -1511,7 +1619,7 @@ public class TeamUtils
 	public static void copyToRepository(IProject iProject) throws Exception
 	{
 		// Zielverzeichnis ist das Arbeitsverzeichnis des lokalen Repositories
-		File destDir = getDefaultLocalRepositoryDir();
+		File destDir = getProjectReposDirectory(iProject);
 		
 		// Projekt in das Arbeitsverzeichnis kopieren
 		File srcDir = iProject.getLocation().toFile();

@@ -17,6 +17,7 @@
 		<module>it.naturtalent.team.model</module>
 		<module>it.naturtalent.team.model.edit</module>
 		<module>it.naturtalent.team.ui</module>
+		<module>it.naturtalent.team.viewmodel</module>
 	</modules>
 
 </project>

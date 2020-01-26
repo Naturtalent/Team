@@ -90,18 +90,18 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 		// 'textDirectory' mit Defaultverzeichnis initialisieren
 		IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE
 				.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);		
-		String initialDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, null);		
+		String initialDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null);		
 		int cursorPosition = initialDirectory.length();
 		if (StringUtils.isNotEmpty(initialDirectory))
 		{
 			initialDirectory = instancePreferenceNode
-					.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, null)
+					.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null)
 					+ File.separatorChar + Messages.CreateRepositoryDialog_DefaultRepositoryName;
 			int repoCounter = 2;
 			while (Paths.get(initialDirectory).toFile().exists())
 			{
 				initialDirectory = instancePreferenceNode.get(
-						TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR, null)
+						TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null)
 						+ File.separatorChar + Messages.CreateRepositoryDialog_DefaultRepositoryName + repoCounter++;
 			}
 			cursorPosition++;

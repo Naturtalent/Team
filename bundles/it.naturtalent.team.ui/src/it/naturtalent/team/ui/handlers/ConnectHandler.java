@@ -28,13 +28,10 @@ public class ConnectHandler
 		IProject iProject = TeamUtils.getSelectedIProject(partService);
 		if(iProject != null)
 		{
-			if (MessageDialog.openQuestion(shell, "Team","Projekt beim Team anmelden")) //$NON-NLS-N$
+			if (MessageDialog.openQuestion(shell, "Team","Projekt wird beim Team angemeldet")) //$NON-NLS-N$
 			{	
-				ConnectAction connectAction = ContextInjectionFactory
-						.make(ConnectAction.class, context);
+				ConnectAction connectAction = ContextInjectionFactory.make(ConnectAction.class, context);
 				connectAction.run();
-				
-				MessageDialog.openInformation(shell,"Team",connectAction.getMessage()); //$NON-NLS-N$				
 			}
 		}
 	}
@@ -47,8 +44,8 @@ public class ConnectHandler
 		if(iProject == null)
 			return false;
 		
-		// Disable, wenn bereits ein Projectbranch existiert
-		return(!TeamUtils.existLocalProjectBracnch(iProject));
+		// Enable, wenn noch kein lokales Repository fuer dieses Projekt existiert
+		return(!TeamUtils.existProjectRepository(iProject));
 	}
 
 }

@@ -11,7 +11,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.swt.widgets.Shell;
 
 import it.naturtalent.team.ui.TeamUtils;
@@ -60,11 +59,12 @@ public class PullHandler
 	public boolean canExecute(@Optional EPartService partService)
 	{
 		// Disable, wenn kein IProject selektiert ist
-		if(TeamUtils.getSelectedIProject(partService) == null)
+		IProject iProject = TeamUtils.getSelectedIProject(partService);
+		if(iProject == null)
 			return false;
 		
-		// Disable, wenn kein lokales Repository existiertk
-		return(TeamUtils.existDefaultGit());
+		// Enable, wenn ein lokales Repository existiertk	
+		return(TeamUtils.existProjectRepository(iProject));
 	}
 		
 }

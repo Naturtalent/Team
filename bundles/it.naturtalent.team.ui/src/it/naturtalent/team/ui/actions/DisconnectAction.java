@@ -1,7 +1,10 @@
 package it.naturtalent.team.ui.actions;
 
+import java.io.File;
+
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -28,11 +31,10 @@ public class DisconnectAction extends Action
 		{
 			try
 			{
-				// Projektbranch im lokalen Repository entfernen
-				TeamUtils.deleteLocalProjectBranch(iProject);
-				
-				// Tracking Branch im lokalen Repository entfernen
-				TeamUtils.deleteRemoteTrackingBranch(iProject);
+				// das gesamte Verzeichnis wird geloescht
+				File reposDir = TeamUtils.getProjectReposDirectory(iProject);
+				if(reposDir.exists())
+					FileUtils.deleteDirectory(reposDir);
 				
 			} catch (Exception e)
 			{				
@@ -42,24 +44,6 @@ public class DisconnectAction extends Action
 		}
 	}
 	
-	/**
-	 * Remote Projektbrachn loeschen
-	 */
-	public void disconnectRemote()
-	{	
-		if(iProject != null)
-		{
-			try
-			{
-				TeamUtils.deleteRemoteProjectBranch(iProject);
-
-			} catch (Exception e)
-			{
-				// e.printStackTrace();
-				message = message + "\n" + e.getMessage();
-			}
-		}		
-	}
 	
 	public String getMessage()
 	{

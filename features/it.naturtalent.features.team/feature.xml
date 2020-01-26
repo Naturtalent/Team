@@ -24,4 +24,31 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="it.naturtalent.team.base"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="it.naturtalent.team.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="it.naturtalent.team.model.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="it.naturtalent.team.viewmodel"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
 </feature>

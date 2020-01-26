@@ -20,7 +20,7 @@ import it.naturtalent.team.ui.TeamUtils;
 import it.naturtalent.team.ui.dialogs.MergeConflictDialog;
 
 
-public class PushHandler
+public class PushHandler2
 {
 	@Execute
 	public void execute(@Optional EPartService partService, 
@@ -33,20 +33,43 @@ public class PushHandler
 			String message = "Projektdaten wurden hochgeladen "; //$NON-NLS-N$;			
 			try
 			{		
+				
+				//ResetCommand()
+				//RmCommand)
+				
+				TeamUtils.statusCommandTEST();
+				
+				// Projekt auschecken - HEAD auf den Projektbranch ausrichten
+				TeamUtils.checkoutProject(iProject);
+				
+				TeamUtils.statusCommandTEST();
+								
+				TeamUtils.cleanWorkspace();
+				
+				List<String>missingFiles = TeamUtils.getStatusMissingFiles();
+				TeamUtils.removeCommand(missingFiles);
+								
+				TeamUtils.statusCommandTEST();
+				
+				//TeamUtils.addCommand();
+				
+				//TeamUtils.statusCommandTEST();
+				
+				TeamUtils.commitCommand(null);
+				
+				TeamUtils.pushProjectBranch(iProject);
+								
 				// die aktuellen Projektressourcen in den Workspace kopieren
 				TeamUtils.copyToRepository(iProject);
 				
-				TeamUtils.addCommand(iProject);
-				
-				/*
+				TeamUtils.addCommand();
 				
 				// Committen
 				TeamUtils.commitCommand(null);
 
 				// push
 				TeamUtils.pushProjectBranch(iProject);
-				
-							*/
+			
 				
 			} catch (Exception e)
 			{

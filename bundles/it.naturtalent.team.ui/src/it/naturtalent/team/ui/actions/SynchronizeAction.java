@@ -12,6 +12,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 
+
 import it.naturtalent.team.ui.TeamUtils;
 import it.naturtalent.team.ui.TeamUtils.State;
 

@@ -7,31 +7,36 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>1.0.0</tycho.version>
+		<tycho.version>1.4.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<repo.url>http://download.eclipse.org/releases/photon</repo.url>
-		<url.updateSite>file:/media/dieter/MAXONE/UpdateSites</url.updateSite>
+		<java.version>1.8</java.version>	
+		<target.path>it.naturtalent.team.target</target.path>		
 	</properties>
 	
-	<!-- Repositories should be commented out to only use the target definition --> 
+	<!-- Repositories should be commented out to only use the target definition 
  	<repositories>
  		 <repository>
    			<id>eclipse-release</id>
   			<url>${repo.url}</url>
    			<layout>p2</layout>
  		 </repository>
- 		 
-  		 <repository>
-   			<id>naturtalent-basis</id>
-  			<url>${url.updateSite}/Basis/repository/</url>
-   			<layout>p2</layout>
- 		 </repository>
- 		  
  	</repositories>
+ 	-->
  	
 	<build>
 		<plugins>
 		
+			<!-- Java compiler configuration -->
+   			<plugin>
+    	  		<groupId>org.eclipse.tycho</groupId>
+    	  		<artifactId>tycho-compiler-plugin</artifactId>     	 		
+     	 		<version>${tycho.version}</version>
+     	 		<configuration>
+      	  			<source>${java.version}</source>
+       	 			<target>${java.version}</target>
+     	 		</configuration>     	 
+    		</plugin> 
+    				
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
@@ -58,22 +63,24 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
+				
 				<configuration>
+				
+					<target>
+					<!-- This block activates the usage of the target definition file -->
+						<artifact>
+							<groupId>it.naturtalent.team</groupId>
+							<artifactId>${target.path}</artifactId>
+							<version>1.0.0-SNAPSHOT</version>
+						</artifact>
+					</target>
+				
+				
 					<environments>
 						<environment>
 							<os>linux</os>
 							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
 							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86</arch>
 						</environment>
 						<environment>
 							<os>win32</os>

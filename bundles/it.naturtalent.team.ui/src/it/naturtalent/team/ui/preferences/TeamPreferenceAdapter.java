@@ -1,50 +1,50 @@
 package it.naturtalent.team.ui.preferences;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import it.naturtalent.application.IPreferenceAdapter;
 import it.naturtalent.application.IPreferenceNode;
 import it.naturtalent.e4.preferences.AbstractPreferenceAdapter;
 import it.naturtalent.e4.preferences.DirectoryEditorComposite;
-import it.naturtalent.e4.preferences.ListEditorComposite;
-import it.naturtalent.team.ui.TeamUtils;
 
 public class TeamPreferenceAdapter extends AbstractPreferenceAdapter
 {
-
+	// Preaferenzknoten und Keys
 	public static final String ROOT_TEAM_PREFERENCES_NODE = "it.naturtalent.team"; //$NON-NLS-1$
-	public static final String PREFERENCE_TEAM_REPOSDIR = "prefteamreposdir"; //$NON-NLS-1$
 	
-	// Name des Verzeichnisses mit den Repositories
-	public static final String REPOSITORIES_DIRECRORYNAME = "repositories"; //$NON-NLS-1$
+	// Praeferenzkey fuer das Verzeichnis in dem alle Teamrepositories gespeichert werden (Rootverzeichnis)
+	public static final String PREFERENCE_TEAM_REPOSDIR_KEY = "prefteamreposdir"; //$NON-NLS-1$
 
-	// DefaultName des Repository
-	public static final String DEFAULT_REPOSITORYNAME = "NtRepository"; //$NON-NLS-1$
+	// Praeferenzkey fuer das Verzeichnis in dem alle Teamrepositories gespeichert werden (Rootverzeichnis)
+	public static final String PREFERENCE_REMOTE_REPOSDIR_KEY = "remoteteamreposdir"; //$NON-NLS-1$
+
+	// Name des Verzeichnisses indem alle Repositories gespeichert werden (locale und remotes)
+	public static final String REPOSITORIES_DIRECORYNAME = "Repositories"; //$NON-NLS-1$
+
+	// Name des Verzeichnisses indem die Projekt-Repositories gespeichert werden
+	public static final String LOCAL_REPOSITORIESNAME = "LocalRepositories"; //$NON-NLS-1$
+	
+	//  Name des Default-Verzeichnis der Remote-Repositories (Develepment Modus)
+	public static final String REMOTE_REPOSITORIESNAME = "RemoteRepositories"; //$NON-NLS-1$
+	
 	private DirectoryEditorComposite directoryEditorComposite;
 	
-	public static final String PREFERENCE_TEAM_REMOTEREPOS_URI = "prefremoteteamreposdir"; //$NON-NLS-1$
-	public static final String DEFAULT_REMOTE_REPOSITORYNAME = DEFAULT_REPOSITORYNAME+".Git"; //$NON-NLS-1$
+	//public static final String PREFERENCE_TEAM_REMOTEREPOS_URI = "prefremoteteamreposdir"; //$NON-NLS-1$
+	//public static final String DEFAULT_REMOTE_REPOSITORYNAME = LOCAL_REPOSITORIESNAME+".Git"; //$NON-NLS-1$
+	
 	private DirectoryEditorComposite remoteDirectoryEditorComposite;
 			
 	// Directory des Repostiores (hier befindet sich das Vertzeichnis .git)
-	private String localReposDirPath;
+	//private String localReposDirPath;
 	
 	// Directory des RemoteRepostiores
-	private String remoteReposDirURI;
+	private String rootReposDir;
 
 	
 	public TeamPreferenceAdapter()
@@ -74,102 +74,91 @@ public class TeamPreferenceAdapter extends AbstractPreferenceAdapter
 		TeamPreferenceComposite referenceComposite = new TeamPreferenceComposite(referenceNode.getParentNode(), SWT.None);
 		directoryEditorComposite = referenceComposite.getDirectoryEditorComposite();		
 
-		// praeferenziertes Repositoriesverzeichnis abfragen - Default wenn noch keins definiert
-		localReposDirPath = instancePreferenceNode.get(PREFERENCE_TEAM_REPOSDIR,
-				defaultPreferenceNode.get(PREFERENCE_TEAM_REPOSDIR, null));
+		// praeferenziertes Repositoriesverzeichnis 	
+		rootReposDir = instancePreferenceNode.get(PREFERENCE_TEAM_REPOSDIR_KEY, null);
+		if(rootReposDir != null)
+			directoryEditorComposite.setDirectory(rootReposDir);
+		else
+			restoreDefaultPressed();
 		
-		// das praeferenzierte Verzeichnis an den Editor uebergeben 
-		directoryEditorComposite.setDirectory(localReposDirPath);
-		
-		//
-		//  Remote
-		//
-
-		/*
-		// Remote-Defaultverzeichnis ebenfalls im Unterverzeichnis von 'NT_PROGRAM_HOME' anlegen 
-		File remoteDefaultReposDir = new File(
-			System.getProperty(it.naturtalent.application.Activator.NT_PROGRAM_HOME),REPOSITORIES_DIRECRORYNAME);			
-		remoteDefaultReposDir = new File(remoteDefaultReposDir, DEFAULT_REMOTE_REPOSITORYNAME); 
-		
-		// sicherstellen, dass das praeferenzierte Remote-Verzeichnis exisitiert			
-		if(!remoteDefaultReposDir.exists())
-			remoteDefaultReposDir.mkdir();		
-		
-		// File to URI (URI startet mit file:///) als Praeferenz speichern
-		URI remoteURI = remoteDefaultReposDir.toURI();		
-		defaultPreferenceNode.put(PREFERENCE_TEAM_REMOTEREPOS_URI, remoteURI.toString());	
-		*/	
-		
-		
-
-		// praeferenziertes Remote-Repositoriesverzeichnis in EditorComposite uebernehmen
-		remoteReposDirURI = instancePreferenceNode.get(PREFERENCE_TEAM_REMOTEREPOS_URI,
-				defaultPreferenceNode.get(PREFERENCE_TEAM_REMOTEREPOS_URI, null));
-		remoteDirectoryEditorComposite = referenceComposite.getRemoteDirectoryEditorComposite();
-		remoteDirectoryEditorComposite.setDirectory(remoteReposDirURI);
-				
 		return referenceComposite;
 	}
-	
+
+	/**
+	 * DefaultRestore - Default Root-Repositoriesverzeichnis wiederherstellen 
+	 */
 	@Override
 	public void restoreDefaultPressed()
 	{
-		// Temporaeres Verzeichnis (aus Applicatinpraeferenzen) wird auch RepositoryVerzeichnis	
-		String value = defaultPreferenceNode.get(PREFERENCE_TEAM_REPOSDIR, null);
-		directoryEditorComposite.setDirectory(value);
-		
-		value = defaultPreferenceNode.get(PREFERENCE_TEAM_REMOTEREPOS_URI, null);
-		remoteDirectoryEditorComposite.setDirectory(value);
+		// Default Root-Repository
+		File defaultDirectory = new File(System.getProperty(it.naturtalent.application.Activator.NT_PROGRAM_HOME));		
+		rootReposDir = new File(defaultDirectory,REPOSITORIES_DIRECORYNAME).getPath();		
+		instancePreferenceNode.put(PREFERENCE_TEAM_REPOSDIR_KEY, rootReposDir);
+		directoryEditorComposite.setDirectory(rootReposDir);
 	}
 
+	/**
+	 * Ok - das Verzeichnis aus dem Editor wird praeferenziertes Root-Repositoriesverzeichnis 
+	 */
 	@Override
 	public void appliedPressed()
-	{
-		// Verzeichnis vom Editor abfragen und als Praeferenzen festschreiben
+	{		
 		String value = directoryEditorComposite.getDirectory();
-		if(StringUtils.isNotEmpty(value))
-			instancePreferenceNode.put(PREFERENCE_TEAM_REPOSDIR, value);
-		else
-			instancePreferenceNode.put(PREFERENCE_TEAM_REPOSDIR,
-					defaultPreferenceNode.get(PREFERENCE_TEAM_REPOSDIR, null));
 		
-		// Remote Repository
-		value = remoteDirectoryEditorComposite.getDirectory();
+		if (StringUtils.isNotEmpty(value))
+		{
+			File defaultDir = new File(value);
+			if(defaultDir.isDirectory())
+			{				
+				if (!defaultDir.exists())
+					defaultDir.mkdir();
 				
-		// gespeichert werden soll eine URI (Protokoll)
-		String protocol = TeamUtils.getProtocol(value);
-		if(StringUtils.equals(protocol, "file")) //$NON-NLS-N$
-		{			
-			try
-			{
-				File file = new File(value);
-				URI uri = file.toURI();
-				value = uri.toString();							
-			} catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
+				instancePreferenceNode.put(PREFERENCE_TEAM_REPOSDIR_KEY,value);								
+			}
 		}
-		
-		if(StringUtils.isNotEmpty(value))
-			instancePreferenceNode.put(PREFERENCE_TEAM_REMOTEREPOS_URI, value);
-		else
-			instancePreferenceNode.put(PREFERENCE_TEAM_REMOTEREPOS_URI,
-					defaultPreferenceNode.get(PREFERENCE_TEAM_REMOTEREPOS_URI, null));
-		
+				
 		try
 		{
-			// RemoteURI im lokalen Repository bekanntmachen
-			value = instancePreferenceNode.get(PREFERENCE_TEAM_REMOTEREPOS_URI,null);
-			TeamUtils.setRemoteConfig(value);
-			
 			// Praeferenzen festschreiben
 			instancePreferenceNode.flush();
 		} catch (Exception e)
 		{			
 			e.printStackTrace();
 		}
+	}
+	
+	public static void initRepositoriesInfrastructure(File rootReposDir)
+	{
+		IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE.getNode(ROOT_TEAM_PREFERENCES_NODE);
+		
+		File localReposDir = new File(rootReposDir,TeamPreferenceAdapter.LOCAL_REPOSITORIESNAME);
+		if(!localReposDir.exists())
+			localReposDir.mkdir();	
+		
+		// sicherstellen dass ein Remote-Defaultverzeichnis existiert
+		File remoteReposDir = new File(rootReposDir,TeamPreferenceAdapter.REMOTE_REPOSITORIESNAME);
+		if(!remoteReposDir.exists())
+			remoteReposDir.mkdir();
+		
+		// ist ein Remoteverzeichnis praeferenziert 			
+		String prefValue = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY, "");
+		if(StringUtils.isEmpty(prefValue))
+		{
+			// keine praeferenziertes Remoteverzeichnis . Rueckfall auf Default
+			instancePreferenceNode.put(TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY,remoteReposDir.getPath());					
+		}
+						
+		try
+		{
+			// Praeferenzen festschreiben
+			instancePreferenceNode.flush();
+		} catch (Exception e)
+		{			
+			e.printStackTrace();
+		}
+
+
+		
 	}
 	
 }

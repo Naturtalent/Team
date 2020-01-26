@@ -1,6 +1,6 @@
 package it.naturtalent.team.ui.actions;
 
-import java.util.List;
+import java.io.File;
 
 import javax.annotation.PostConstruct;
 
@@ -15,7 +15,7 @@ public class ConnectAction extends Action
 {
 	private IProject iProject = null;
 	
-	private String message = "Verbindung zum Team"; //$NON-NLS-N$;
+	private String message = "Verbindung zum Team herstellen"; //$NON-NLS-N$;
 	
 	@PostConstruct
 	public void postConstruction(@Optional EPartService partService)
@@ -30,13 +30,13 @@ public class ConnectAction extends Action
 		{
 			try
 			{
-				String branchName = iProject.getName();
-								
-				// Projektbranch erzeugen - HEAD auf den Projektbranch ausrichten
-				TeamUtils.createLocalBranch(branchName);
+				// ein Verzeichnis (Workspace) des Repositorys anlegen
+				File reposDir = TeamUtils.getProjectReposDirectory(iProject);
+				if(!reposDir.exists())
+					reposDir.mkdir();
 				
-				TeamUtils.createRemoteBranch(iProject);
-				
+				// ein Repository erzeugen
+				TeamUtils.createLocalRepository(reposDir, false);
 				
 			} catch (Exception e)
 			{				
