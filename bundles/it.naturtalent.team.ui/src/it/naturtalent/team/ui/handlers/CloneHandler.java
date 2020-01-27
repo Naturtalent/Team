@@ -26,6 +26,8 @@ public class CloneHandler
 			@Named(IServiceConstants.ACTIVE_SHELL) @Optional Shell shell,
 			@Optional INtProjectPropertyFactoryRepository projektDataFactoryRepository)			
 	{
+		
+		/*
 		if(selectedBranch != null)
 		{
 			IProject iProject = TeamModelUtils.getProjectBranchProject(selectedBranch);
@@ -34,14 +36,13 @@ public class CloneHandler
 				CloneAction cloneAction = ContextInjectionFactory.make(CloneAction.class, context);
 				cloneAction.run();
 			}
-		}		
+		}
+		*/		
 	}
 
 	@CanExecute
 	public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Branch selectedBranch)
 	{
-		if(selectedBranch != null)
-			return(TeamModelUtils.getProjectBranchProject(selectedBranch) == null);
 
 		return false;
 	}

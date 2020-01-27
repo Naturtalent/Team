@@ -42,6 +42,7 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 	private boolean hideBare = false;
 	private Shell shell;
 	
+	private String remoteURI;
 
 	/**
 	 * Create the dialog.
@@ -78,14 +79,10 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 		Composite area = (Composite) super.createDialogArea(parent);
 		Composite container = new Composite(area, SWT.NONE);
 		container.setLayout(new GridLayout(3, false));
-		container.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
-		Label lblDirectory = new Label(container, SWT.NONE);
-		lblDirectory.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblDirectory.setText(Messages.CreateRepositoryDialog_lblDirectory_text);
-		
-		textDirectory = new Text(container, SWT.BORDER);
-		textDirectory.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		GridData gd_container = new GridData(GridData.FILL_BOTH);
+		gd_container.heightHint = 114;
+		container.setLayoutData(gd_container);
+		new Label(container, SWT.NONE);
 		
 		// 'textDirectory' mit Defaultverzeichnis initialisieren
 		IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE
@@ -106,13 +103,22 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 			}
 			cursorPosition++;
 		}
+		new Label(container, SWT.NONE);
+		new Label(container, SWT.NONE);
+		
+		Label lblDirectory = new Label(container, SWT.NONE);
+		lblDirectory.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblDirectory.setText(Messages.CreateRepositoryDialog_lblDirectory_text);
+		
+		textDirectory = new Text(container, SWT.BORDER);
+		textDirectory.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		textDirectory.addModifyListener(new ModifyListener()
 		{
 			@Override
 			public void modifyText(ModifyEvent e)
 			{
-				checkDialog();
+				//checkDialog();
 			}
 		});
 		
@@ -145,27 +151,6 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 			}
 		});
 		btnNew.setText(Messages.CreateRepositoryDialog_btnNewButton_text);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		
-		// HideBar - Button
-		Button btnCheck = new Button(container, SWT.CHECK);
-		btnCheck.addSelectionListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				hideBare = ((Button)(e.getSource())).getSelection();
-				checkDialog();
-			}
-		});
-		btnCheck.setText(Messages.CreateRepositoryDialog_btnCheckButton_text);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		
-
-
 		return area;
 	}
 	
@@ -226,24 +211,22 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 	@Override
 	protected Point getInitialSize()
 	{
-		return new Point(553, 300);
+		return new Point(759, 300);
 	}
 
 	@Override
 	protected void okPressed()
 	{
-		File reposDir = new File(textDirectory.getText());
-		try
-		{
-			TeamUtils.createLocalRepository(reposDir, hideBare);
-			MessageDialog.openInformation(shell,Messages.CreateRepositoryDialog_TeamWindowTitle,Messages.CreateRepositoryDialog_6); 
-		} catch (IllegalStateException | GitAPIException | IOException e)
-		{
-			MessageDialog.openError(shell, Messages.CreateRepositoryDialog_CreateError,e.getMessage());
-			e.printStackTrace();
-		}
+		remoteURI = textDirectory.getText();
 		super.okPressed();
 	}
 
+	public String getRemoteURI()
+	{
+		return remoteURI;
+	}
+
+	
+	
 
 }

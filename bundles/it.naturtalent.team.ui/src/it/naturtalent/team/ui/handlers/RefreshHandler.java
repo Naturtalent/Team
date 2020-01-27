@@ -22,13 +22,14 @@ public class RefreshHandler
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) @Optional Shell shell, @Optional IEventBroker eventBroker,
 			@Preference(nodePath = TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE, value = TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY) String reposDir)
 	{
-		
+		/*
 		BusyIndicator.showWhile(shell.getDisplay(), () -> 
 		{
 			ReposData reposData = TeamModelUtils.getRemoteReposData();
 			reposData.setRemoteURI(reposDir);
 			eventBroker.post(TeamModelUtils.REFRESH_PROPJECTBRANCH_VIEW_EVENT, reposData);
-		});		
+		});
+		*/		
 		
 		
 		System.out.println("refresh");

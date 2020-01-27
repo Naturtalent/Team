@@ -50,7 +50,7 @@ import it.naturtalent.team.ui.actions.CloneAction;
 import it.naturtalent.team.ui.preferences.TeamPreferenceAdapter;
 
 
-public class RemoteRepositoryView
+public class RemoteRepositoryView2
 {
 	private ReposData reposData;
 	
@@ -59,7 +59,7 @@ public class RemoteRepositoryView
 	private IEclipseContext context;
 	
 	@Inject
-	public RemoteRepositoryView()
+	public RemoteRepositoryView2()
 	{
 
 	}
@@ -72,15 +72,23 @@ public class RemoteRepositoryView
 	{
 
 		this.context = context;
-
-		EClass reposClass = TeamPackage.eINSTANCE.getReposData();
-		reposData = (ReposData) EcoreUtil.create(reposClass);
-		reposData.setName("Remote Repository");
-	
+		
+		BusyIndicator.showWhile(shell.getDisplay(), () -> 
+		{
+			reposData = TeamModelUtils.getRemoteReposData();
+			//reposData.setRemoteURI(reposDir);
+		});		
+		
+		
+		
 		try
 		{
 			ECPSWTView view = ECPSWTViewRenderer.INSTANCE.render(parent, reposData);			
 			viewModelContext = view.getViewModelContext();
+			
+		
+			
+			
 		}
 
 		catch (ECPRendererException e)
@@ -89,13 +97,6 @@ public class RemoteRepositoryView
 			e.printStackTrace();
 		}	
 
-
-
-	}
-	
-	public void setRemoteUri(String uri)
-	{
-		reposData.setRemoteURI(uri);
 	}
 	
 	@Inject
