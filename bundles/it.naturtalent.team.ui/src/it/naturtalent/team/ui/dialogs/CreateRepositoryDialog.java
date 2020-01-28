@@ -84,25 +84,7 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 		container.setLayoutData(gd_container);
 		new Label(container, SWT.NONE);
 		
-		// 'textDirectory' mit Defaultverzeichnis initialisieren
-		IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE
-				.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);		
-		String initialDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null);		
-		int cursorPosition = initialDirectory.length();
-		if (StringUtils.isNotEmpty(initialDirectory))
-		{
-			initialDirectory = instancePreferenceNode
-					.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null)
-					+ File.separatorChar + Messages.CreateRepositoryDialog_DefaultRepositoryName;
-			int repoCounter = 2;
-			while (Paths.get(initialDirectory).toFile().exists())
-			{
-				initialDirectory = instancePreferenceNode.get(
-						TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null)
-						+ File.separatorChar + Messages.CreateRepositoryDialog_DefaultRepositoryName + repoCounter++;
-			}
-			cursorPosition++;
-		}
+
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 		
@@ -122,12 +104,20 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 			}
 		});
 		
-		textDirectory.setText(initialDirectory);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER)
-		.grab(true, false).applyTo(textDirectory);
-		
+		// 'textDirectory' mit Defaultverzeichnis initialisieren
+		IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);		
+		String remoteReposDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY, null);
+		if(StringUtils.isEmpty(remoteReposDirectory))
+		{
+			remoteReposDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null);
+			File remoteRepos = new File(remoteReposDirectory,TeamPreferenceAdapter.REMOTE_REPOSITORIESNAME);
+			remoteReposDirectory = remoteRepos.getPath(); 
+		}
+				
+		textDirectory.setText(remoteReposDirectory);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(textDirectory);		
 		textDirectory.setFocus();
-		textDirectory.setSelection(cursorPosition,textDirectory.getText().length());
+	
 		
 		// Browse - Button
 		Button btnNew = new Button(container, SWT.NONE);

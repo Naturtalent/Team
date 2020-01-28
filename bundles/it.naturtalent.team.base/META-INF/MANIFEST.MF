@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Dieter Apel
 Automatic-Module-Name: it.naturtalent.team.base
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/minimal-json-0.9.4.jar
 Require-Bundle: org.eclipse.jgit,
  org.eclipse.equinox.registry,
  org.eclipse.core.resources,
