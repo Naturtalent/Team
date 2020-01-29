@@ -12,4 +12,5 @@ Require-Bundle: org.eclipse.jgit,
  org.eclipse.equinox.registry,
  org.eclipse.core.resources,
  it.wp.common.io
-Export-Package: it.naturtalent.team.base
+Export-Package: it.naturtalent.team.base,
+ org.nuxeo.onedrive.client
