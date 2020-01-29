@@ -104,11 +104,12 @@ public class CreateRepositoryDialog extends TitleAreaDialog
 			}
 		});
 		
-		// 'textDirectory' mit Defaultverzeichnis initialisieren
+		// 'textDirectory' mit dem momentan praeferenzierten Remoteverzeichnis initialisieren
 		IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);		
 		String remoteReposDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY, null);
 		if(StringUtils.isEmpty(remoteReposDirectory))
 		{
+			// mit Defaultverzeichnis initialisieren 
 			remoteReposDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_TEAM_REPOSDIR_KEY, null);
 			File remoteRepos = new File(remoteReposDirectory,TeamPreferenceAdapter.REMOTE_REPOSITORIESNAME);
 			remoteReposDirectory = remoteRepos.getPath(); 

@@ -7,19 +7,29 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import it.naturtalent.team.ui.TeamUtils;
 import it.naturtalent.team.ui.dialogs.MergeConflictDialog;
+import it.naturtalent.team.ui.preferences.TeamPreferenceAdapter;
 
 
+/**
+ * Lokales Projekt in ein remote Repository hochladen.
+ * 
+ * @author dieter
+ *
+ */
 public class PushHandler
 {
 	@Execute
@@ -30,7 +40,7 @@ public class PushHandler
 		IProject iProject = TeamUtils.getSelectedIProject(partService);		
 		if(iProject != null)
 		{
-			String message = "Projektdaten wurden hochgeladen "; //$NON-NLS-N$;			
+			String message = "ein Projekt hochgeladen "; //$NON-NLS-N$;			
 			try
 			{		
 				// die aktuellen Projektressourcen in den Workspace kopieren
@@ -72,6 +82,22 @@ public class PushHandler
 		
 		// Enable, wenn ein lokales Repository existiertk	
 		return(TeamUtils.existProjectRepository(iProject));
+	}
+	
+	/*
+	 * prueft ob bereits ein Remote Repoitory vorhanden ist. Wenn nicht wird eins erzeugt.
+	 * 
+	 */
+	private Repository checkAndCreateRemoteRepos(IProject iProject) throws Exception
+	{
+		IEclipsePreferences instancePreferenceNode = InstanceScope.INSTANCE.getNode(TeamPreferenceAdapter.ROOT_TEAM_PREFERENCES_NODE);		
+		String remoteReposDirectory = instancePreferenceNode.get(TeamPreferenceAdapter.PREFERENCE_REMOTE_REPOSDIR_KEY, null);
+		if(StringUtils.isNotEmpty(remoteReposDirectory))
+		{
+			Repository remoteRepository = TeamUtils.createRemoteRepository(remoteReposDirectory, iProject);
+		}
+		
+		return null;
 	}
 		
 }
