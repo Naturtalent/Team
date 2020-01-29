@@ -1318,15 +1318,12 @@ public class TeamUtils
 		{
 			// projektsprezifisches Repo
 			String projectDir = remoteDirURI+File.separator+iProject.getName();
-			remoteRepository =  createRemoteRepository(projectDir);
-			
-			String name = iProject.getPersistentProperty(INtProject.projectNameQualifiedName);
-			
+			remoteRepository = createRemoteRepository(projectDir);
 		}
 		
 		return remoteRepository;
 	}
-	
+
 	/**
 	 * Ein Remote Repository erstellen.
 	 * 
