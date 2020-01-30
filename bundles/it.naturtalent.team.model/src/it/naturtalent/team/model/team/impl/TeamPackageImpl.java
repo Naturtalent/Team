@@ -3,6 +3,7 @@
 package it.naturtalent.team.model.team.impl;
 
 import it.naturtalent.team.model.team.Branch;
+import it.naturtalent.team.model.team.Login;
 import it.naturtalent.team.model.team.ReposData;
 import it.naturtalent.team.model.team.TeamFactory;
 import it.naturtalent.team.model.team.TeamPackage;
@@ -35,6 +36,13 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * @generated
 	 */
 	private EClass branchEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass loginEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -104,6 +112,7 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getReposData()
 	{
 		return reposDataEClass;
@@ -114,6 +123,7 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getReposData_Name()
 	{
 		return (EAttribute)reposDataEClass.getEStructuralFeatures().get(0);
@@ -124,6 +134,7 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getReposData_RemoteURI()
 	{
 		return (EAttribute)reposDataEClass.getEStructuralFeatures().get(1);
@@ -134,6 +145,7 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getReposData_Branches()
 	{
 		return (EReference)reposDataEClass.getEStructuralFeatures().get(2);
@@ -144,6 +156,7 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getBranch()
 	{
 		return branchEClass;
@@ -154,6 +167,7 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBranch_Name()
 	{
 		return (EAttribute)branchEClass.getEStructuralFeatures().get(0);
@@ -164,6 +178,7 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBranch_Id()
 	{
 		return (EAttribute)branchEClass.getEStructuralFeatures().get(1);
@@ -174,6 +189,62 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
+	public EClass getLogin()
+	{
+		return loginEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getLogin_User()
+	{
+		return (EAttribute)loginEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getLogin_Password()
+	{
+		return (EAttribute)loginEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getLogin_Domain()
+	{
+		return (EAttribute)loginEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getLogin_URL()
+	{
+		return (EAttribute)loginEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public TeamFactory getTeamFactory()
 	{
 		return (TeamFactory)getEFactoryInstance();
@@ -207,6 +278,12 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 		branchEClass = createEClass(BRANCH);
 		createEAttribute(branchEClass, BRANCH__NAME);
 		createEAttribute(branchEClass, BRANCH__ID);
+
+		loginEClass = createEClass(LOGIN);
+		createEAttribute(loginEClass, LOGIN__USER);
+		createEAttribute(loginEClass, LOGIN__PASSWORD);
+		createEAttribute(loginEClass, LOGIN__DOMAIN);
+		createEAttribute(loginEClass, LOGIN__URL);
 	}
 
 	/**
@@ -248,6 +325,12 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 		initEClass(branchEClass, Branch.class, "Branch", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getBranch_Name(), ecorePackage.getEString(), "name", null, 0, 1, Branch.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getBranch_Id(), ecorePackage.getEString(), "id", null, 0, 1, Branch.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(loginEClass, Login.class, "Login", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getLogin_User(), ecorePackage.getEString(), "User", null, 0, 1, Login.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getLogin_Password(), ecorePackage.getEString(), "Password", null, 0, 1, Login.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getLogin_Domain(), ecorePackage.getEString(), "Domain", null, 0, 1, Login.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getLogin_URL(), ecorePackage.getEString(), "URL", null, 0, 1, Login.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

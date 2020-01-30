@@ -124,11 +124,37 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link it.naturtalent.team.model.team.Login} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected LoginItemProvider loginItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link it.naturtalent.team.model.team.Login}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createLoginAdapter()
+	{
+		if (loginItemProvider == null)
+		{
+			loginItemProvider = new LoginItemProvider(this);
+		}
+
+		return loginItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ComposeableAdapterFactory getRootAdapterFactory()
 	{
 		return parentAdapterFactory == null ? this : parentAdapterFactory.getRootAdapterFactory();
@@ -140,6 +166,7 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setParentAdapterFactory(ComposedAdapterFactory parentAdapterFactory)
 	{
 		this.parentAdapterFactory = parentAdapterFactory;
@@ -194,6 +221,7 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void addListener(INotifyChangedListener notifyChangedListener)
 	{
 		changeNotifier.addListener(notifyChangedListener);
@@ -205,6 +233,7 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void removeListener(INotifyChangedListener notifyChangedListener)
 	{
 		changeNotifier.removeListener(notifyChangedListener);
@@ -216,6 +245,7 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void fireNotifyChanged(Notification notification)
 	{
 		changeNotifier.fireNotifyChanged(notification);
@@ -232,10 +262,12 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void dispose()
 	{
 		if (reposDataItemProvider != null) reposDataItemProvider.dispose();
 		if (branchItemProvider != null) branchItemProvider.dispose();
+		if (loginItemProvider != null) loginItemProvider.dispose();
 	}
 
 }

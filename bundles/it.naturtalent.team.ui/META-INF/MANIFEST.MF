@@ -58,3 +58,6 @@ Import-Package: it.naturtalent.e4.project.model.project,
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/branchtablerenderer.xml,
  OSGI-INF/reposviewtablecontrolservice.xml
+Bundle-ClassPath: lib/Sharepoint-Java-API-1.5.jar,
+ .
+

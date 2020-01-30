@@ -115,6 +115,7 @@ public class ReposDataImpl extends MinimalEObjectImpl.Container implements Repos
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName()
 	{
 		return name;
@@ -125,6 +126,7 @@ public class ReposDataImpl extends MinimalEObjectImpl.Container implements Repos
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName)
 	{
 		String oldName = name;
@@ -138,6 +140,7 @@ public class ReposDataImpl extends MinimalEObjectImpl.Container implements Repos
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getRemoteURI()
 	{
 		return remoteURI;
@@ -148,6 +151,7 @@ public class ReposDataImpl extends MinimalEObjectImpl.Container implements Repos
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setRemoteURI(String newRemoteURI)
 	{
 		String oldRemoteURI = remoteURI;
@@ -161,6 +165,7 @@ public class ReposDataImpl extends MinimalEObjectImpl.Container implements Repos
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<Branch> getBranches()
 	{
 		if (branches == null)

@@ -85,6 +85,11 @@ public class TeamAdapterFactory extends AdapterFactoryImpl
 				return createBranchAdapter();
 			}
 			@Override
+			public Adapter caseLogin(Login object)
+			{
+				return createLoginAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object)
 			{
 				return createEObjectAdapter();
@@ -132,6 +137,21 @@ public class TeamAdapterFactory extends AdapterFactoryImpl
 	 * @generated
 	 */
 	public Adapter createBranchAdapter()
+	{
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link it.naturtalent.team.model.team.Login <em>Login</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see it.naturtalent.team.model.team.Login
+	 * @generated
+	 */
+	public Adapter createLoginAdapter()
 	{
 		return null;
 	}

@@ -66,6 +66,7 @@ public class TeamFactoryImpl extends EFactoryImpl implements TeamFactory
 		{
 			case TeamPackage.REPOS_DATA: return createReposData();
 			case TeamPackage.BRANCH: return createBranch();
+			case TeamPackage.LOGIN: return createLogin();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -76,6 +77,7 @@ public class TeamFactoryImpl extends EFactoryImpl implements TeamFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ReposData createReposData()
 	{
 		ReposDataImpl reposData = new ReposDataImpl();
@@ -87,6 +89,7 @@ public class TeamFactoryImpl extends EFactoryImpl implements TeamFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Branch createBranch()
 	{
 		BranchImpl branch = new BranchImpl();
@@ -98,6 +101,19 @@ public class TeamFactoryImpl extends EFactoryImpl implements TeamFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
+	public Login createLogin()
+	{
+		LoginImpl login = new LoginImpl();
+		return login;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public TeamPackage getTeamPackage()
 	{
 		return (TeamPackage)getEPackage();

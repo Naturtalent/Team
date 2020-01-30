@@ -94,6 +94,7 @@ public class BranchImpl extends MinimalEObjectImpl.Container implements Branch
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName()
 	{
 		return name;
@@ -104,6 +105,7 @@ public class BranchImpl extends MinimalEObjectImpl.Container implements Branch
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName)
 	{
 		String oldName = name;
@@ -117,6 +119,7 @@ public class BranchImpl extends MinimalEObjectImpl.Container implements Branch
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getId()
 	{
 		return id;
@@ -127,6 +130,7 @@ public class BranchImpl extends MinimalEObjectImpl.Container implements Branch
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setId(String newId)
 	{
 		String oldId = id;

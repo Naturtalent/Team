@@ -41,6 +41,15 @@ public interface TeamFactory extends EFactory
 	Branch createBranch();
 
 	/**
+	 * Returns a new object of class '<em>Login</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Login</em>'.
+	 * @generated
+	 */
+	Login createLogin();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

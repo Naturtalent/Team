@@ -160,6 +160,71 @@ public interface TeamPackage extends EPackage
 
 
 	/**
+	 * The meta object id for the '{@link it.naturtalent.team.model.team.impl.LoginImpl <em>Login</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see it.naturtalent.team.model.team.impl.LoginImpl
+	 * @see it.naturtalent.team.model.team.impl.TeamPackageImpl#getLogin()
+	 * @generated
+	 */
+	int LOGIN = 2;
+
+	/**
+	 * The feature id for the '<em><b>User</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LOGIN__USER = 0;
+
+	/**
+	 * The feature id for the '<em><b>Password</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LOGIN__PASSWORD = 1;
+
+	/**
+	 * The feature id for the '<em><b>Domain</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LOGIN__DOMAIN = 2;
+
+	/**
+	 * The feature id for the '<em><b>URL</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LOGIN__URL = 3;
+
+	/**
+	 * The number of structural features of the '<em>Login</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LOGIN_FEATURE_COUNT = 4;
+
+	/**
+	 * The number of operations of the '<em>Login</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LOGIN_OPERATION_COUNT = 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link it.naturtalent.team.model.team.ReposData <em>Repos Data</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -233,6 +298,60 @@ public interface TeamPackage extends EPackage
 	 * @generated
 	 */
 	EAttribute getBranch_Id();
+
+	/**
+	 * Returns the meta object for class '{@link it.naturtalent.team.model.team.Login <em>Login</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Login</em>'.
+	 * @see it.naturtalent.team.model.team.Login
+	 * @generated
+	 */
+	EClass getLogin();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.Login#getUser <em>User</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>User</em>'.
+	 * @see it.naturtalent.team.model.team.Login#getUser()
+	 * @see #getLogin()
+	 * @generated
+	 */
+	EAttribute getLogin_User();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.Login#getPassword <em>Password</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Password</em>'.
+	 * @see it.naturtalent.team.model.team.Login#getPassword()
+	 * @see #getLogin()
+	 * @generated
+	 */
+	EAttribute getLogin_Password();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.Login#getDomain <em>Domain</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Domain</em>'.
+	 * @see it.naturtalent.team.model.team.Login#getDomain()
+	 * @see #getLogin()
+	 * @generated
+	 */
+	EAttribute getLogin_Domain();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.Login#getURL <em>URL</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>URL</em>'.
+	 * @see it.naturtalent.team.model.team.Login#getURL()
+	 * @see #getLogin()
+	 * @generated
+	 */
+	EAttribute getLogin_URL();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -317,6 +436,48 @@ public interface TeamPackage extends EPackage
 		 * @generated
 		 */
 		EAttribute BRANCH__ID = eINSTANCE.getBranch_Id();
+
+		/**
+		 * The meta object literal for the '{@link it.naturtalent.team.model.team.impl.LoginImpl <em>Login</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see it.naturtalent.team.model.team.impl.LoginImpl
+		 * @see it.naturtalent.team.model.team.impl.TeamPackageImpl#getLogin()
+		 * @generated
+		 */
+		EClass LOGIN = eINSTANCE.getLogin();
+
+		/**
+		 * The meta object literal for the '<em><b>User</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute LOGIN__USER = eINSTANCE.getLogin_User();
+
+		/**
+		 * The meta object literal for the '<em><b>Password</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute LOGIN__PASSWORD = eINSTANCE.getLogin_Password();
+
+		/**
+		 * The meta object literal for the '<em><b>Domain</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute LOGIN__DOMAIN = eINSTANCE.getLogin_Domain();
+
+		/**
+		 * The meta object literal for the '<em><b>URL</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute LOGIN__URL = eINSTANCE.getLogin_URL();
 
 	}
 
