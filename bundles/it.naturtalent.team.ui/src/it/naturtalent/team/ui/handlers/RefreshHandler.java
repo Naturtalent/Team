@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import hk.quantr.sharepoint.SPOnline;
 import it.naturtalent.team.model.team.Login;
 import it.naturtalent.team.model.team.ReposData;
+import it.naturtalent.team.ui.LoginManager;
 import it.naturtalent.team.ui.TeamModelUtils;
 import it.naturtalent.team.ui.dialogs.LoginRemoteReposDialog;
 import it.naturtalent.team.ui.preferences.TeamPreferenceAdapter;
@@ -30,7 +31,11 @@ public class RefreshHandler
 		LoginRemoteReposDialog dialog = new LoginRemoteReposDialog(shell);
 		if(dialog.open() == LoginRemoteReposDialog.OK)
 		{
-			login(dialog.getLoginRemoteLogin());
+			//login(dialog.getLoginRemoteLogin());
+			
+			LoginManager loginMager = new LoginManager();
+			loginMager.login();
+			
 		}
 		
 		
@@ -52,6 +57,12 @@ public class RefreshHandler
 		String user = loginRemoteLogin.getUser();
 		String password = loginRemoteLogin.getPassword();
 		String domain = loginRemoteLogin.getDomain();
+		
+		//user = "Apel, Dieter";
+		user = "Dieter.Apel@telekom.de";
+		password = "Majestix36";
+		domain = "emea1";
+				
 		
 		Pair<String, String> token = SPOnline.login(user, password, domain);		
 		System.out.println(token);
