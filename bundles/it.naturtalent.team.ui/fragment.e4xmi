@@ -17,6 +17,7 @@
         <children xsi:type="menu:DirectToolItem" xmi:id="_oS5TAEvxEemXD_-3PzU9fw" elementId="it.naturtalent.team.ui.directtoolitem.cloneprojekt" label="Clone Projekt" iconURI="icon://COMMAND_CLONE_GIT" tooltip="Projekt in Workspace kopieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.CloneHandler"/>
         <children xsi:type="menu:DirectToolItem" xmi:id="_aCauQE4mEemI6IeZ4DeTiw" elementId="it.naturtalent.team.ui.directtoolitem.refresh" label="Login" iconURI="icon://COMMAND_REFRESH_GIT" tooltip="View aktualisieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.RefreshHandler"/>
         <children xsi:type="menu:DirectToolItem" xmi:id="_xTaoME4pEemI6IeZ4DeTiw" elementId="it.naturtalent.team.ui.directtoolitem.createRepository" label="CreateRepository" iconURI="icon://COMMAND_CREATE_REPOSITORY" tooltip="ein Repository erzeugen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.CreateRepostioryHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="__cylwExVEeqYr4zHhCiutw" elementId="it.naturtalent.team.ui.directtoolitem.ConnectRepository" label="ConnectRepository" iconURI="icon://COMMAND_CONNECT" tooltip="mit einerm Repositoryverzeichnis verbinden" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.ConnectRepositoryDirectoryHandler"/>
       </toolbar>
     </elements>
   </fragments>

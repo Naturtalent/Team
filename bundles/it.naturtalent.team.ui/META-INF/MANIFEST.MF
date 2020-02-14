@@ -3,6 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Ui
 Bundle-SymbolicName: it.naturtalent.team.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: lib/Sharepoint-Java-API-1.5.jar,
+ .,
+ lib/netty-all-4.1.45.Final.jar,
+ lib/lombok.jar
 Bundle-Activator: it.naturtalent.team.ui.Activator
 Bundle-Vendor: Dieter Apel
 Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.0.v20180429-1333",
@@ -50,14 +54,10 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.0.v2018042
  org.eclipse.emf.ecp.edit.swt,
  org.eclipse.emf.edit,
  org.eclipse.e4.ui.di
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Automatic-Module-Name: it.naturtalent.team.ui
 Import-Package: it.naturtalent.e4.project.model.project,
-  javax.annotation;version="1.0.0";resolution:=optional,
-  javax.inject;version="1.0.0"
+ javax.annotation;version="1.0.0";resolution:=optional,
+ javax.inject;version="1.0.0"
+Automatic-Module-Name: it.naturtalent.team.ui
+Service-Component: OSGI-INF/branchtablerenderer.xml,OSGI-INF/reposviewtablecontrolservice.xml
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/branchtablerenderer.xml,
- OSGI-INF/reposviewtablecontrolservice.xml
-Bundle-ClassPath: lib/Sharepoint-Java-API-1.5.jar,
- .
-
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
