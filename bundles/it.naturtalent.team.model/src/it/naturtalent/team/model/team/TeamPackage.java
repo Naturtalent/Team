@@ -225,6 +225,80 @@ public interface TeamPackage extends EPackage
 
 
 	/**
+	 * The meta object id for the '{@link it.naturtalent.team.model.team.impl.OneDriveImpl <em>One Drive</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see it.naturtalent.team.model.team.impl.OneDriveImpl
+	 * @see it.naturtalent.team.model.team.impl.TeamPackageImpl#getOneDrive()
+	 * @generated
+	 */
+	int ONE_DRIVE = 3;
+
+	/**
+	 * The feature id for the '<em><b>Client ID</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ONE_DRIVE__CLIENT_ID = 0;
+
+	/**
+	 * The feature id for the '<em><b>Auth URL</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ONE_DRIVE__AUTH_URL = 1;
+
+	/**
+	 * The feature id for the '<em><b>Redirect URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ONE_DRIVE__REDIRECT_URI = 2;
+
+	/**
+	 * The feature id for the '<em><b>Auth Code</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ONE_DRIVE__AUTH_CODE = 3;
+
+	/**
+	 * The feature id for the '<em><b>Access Token</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ONE_DRIVE__ACCESS_TOKEN = 4;
+
+	/**
+	 * The number of structural features of the '<em>One Drive</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ONE_DRIVE_FEATURE_COUNT = 5;
+
+	/**
+	 * The number of operations of the '<em>One Drive</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ONE_DRIVE_OPERATION_COUNT = 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link it.naturtalent.team.model.team.ReposData <em>Repos Data</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -354,6 +428,71 @@ public interface TeamPackage extends EPackage
 	EAttribute getLogin_URL();
 
 	/**
+	 * Returns the meta object for class '{@link it.naturtalent.team.model.team.OneDrive <em>One Drive</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>One Drive</em>'.
+	 * @see it.naturtalent.team.model.team.OneDrive
+	 * @generated
+	 */
+	EClass getOneDrive();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.OneDrive#getClientID <em>Client ID</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Client ID</em>'.
+	 * @see it.naturtalent.team.model.team.OneDrive#getClientID()
+	 * @see #getOneDrive()
+	 * @generated
+	 */
+	EAttribute getOneDrive_ClientID();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.OneDrive#getAuthURL <em>Auth URL</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Auth URL</em>'.
+	 * @see it.naturtalent.team.model.team.OneDrive#getAuthURL()
+	 * @see #getOneDrive()
+	 * @generated
+	 */
+	EAttribute getOneDrive_AuthURL();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.OneDrive#getRedirectURI <em>Redirect URI</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Redirect URI</em>'.
+	 * @see it.naturtalent.team.model.team.OneDrive#getRedirectURI()
+	 * @see #getOneDrive()
+	 * @generated
+	 */
+	EAttribute getOneDrive_RedirectURI();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.OneDrive#getAuthCode <em>Auth Code</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Auth Code</em>'.
+	 * @see it.naturtalent.team.model.team.OneDrive#getAuthCode()
+	 * @see #getOneDrive()
+	 * @generated
+	 */
+	EAttribute getOneDrive_AuthCode();
+
+	/**
+	 * Returns the meta object for the attribute '{@link it.naturtalent.team.model.team.OneDrive#getAccessToken <em>Access Token</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Access Token</em>'.
+	 * @see it.naturtalent.team.model.team.OneDrive#getAccessToken()
+	 * @see #getOneDrive()
+	 * @generated
+	 */
+	EAttribute getOneDrive_AccessToken();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -478,6 +617,56 @@ public interface TeamPackage extends EPackage
 		 * @generated
 		 */
 		EAttribute LOGIN__URL = eINSTANCE.getLogin_URL();
+
+		/**
+		 * The meta object literal for the '{@link it.naturtalent.team.model.team.impl.OneDriveImpl <em>One Drive</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see it.naturtalent.team.model.team.impl.OneDriveImpl
+		 * @see it.naturtalent.team.model.team.impl.TeamPackageImpl#getOneDrive()
+		 * @generated
+		 */
+		EClass ONE_DRIVE = eINSTANCE.getOneDrive();
+
+		/**
+		 * The meta object literal for the '<em><b>Client ID</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ONE_DRIVE__CLIENT_ID = eINSTANCE.getOneDrive_ClientID();
+
+		/**
+		 * The meta object literal for the '<em><b>Auth URL</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ONE_DRIVE__AUTH_URL = eINSTANCE.getOneDrive_AuthURL();
+
+		/**
+		 * The meta object literal for the '<em><b>Redirect URI</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ONE_DRIVE__REDIRECT_URI = eINSTANCE.getOneDrive_RedirectURI();
+
+		/**
+		 * The meta object literal for the '<em><b>Auth Code</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ONE_DRIVE__AUTH_CODE = eINSTANCE.getOneDrive_AuthCode();
+
+		/**
+		 * The meta object literal for the '<em><b>Access Token</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ONE_DRIVE__ACCESS_TOKEN = eINSTANCE.getOneDrive_AccessToken();
 
 	}
 

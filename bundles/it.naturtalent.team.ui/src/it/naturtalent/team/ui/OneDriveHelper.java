@@ -2,12 +2,18 @@ package it.naturtalent.team.ui;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+
+import javax.net.ssl.TrustManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,9 +28,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecp.core.ECPProject;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+
+import it.naturtalent.team.model.team.OneDrive;
 
 
 
@@ -42,15 +53,21 @@ import com.fasterxml.jackson.core.JsonParser;
  * MS Azure - MS Registrierungstool 
  * https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Authentication/appId/ecbfdf6a-ebc2-4727-9cb1-3b3b347f1391/isMSAApp/true
  */
-public class OneDriveUtilities
+public class OneDriveHelper
 {
 
 	// Ergebnisse der Registrierung (Azur) und Au­to­ri­sie­rung, hardcoded fuer Tests
 	private static final String CLIENT_ID = "ecbfdf6a-ebc2-4727-9cb1-3b3b347f1391";
-	private static final String NATIVECLIENT_CODE = "Mee046302-6ccd-7359-b205-a914f7fe6d2b";
+	private static final String NATIVECLIENT_CODE = "Maadf061a-5412-ce08-fe75-4eb87642b23e";
 
 	private static final String AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0";
-
+	
+	private String auth_url = null;
+	private String[] scopes = null;
+	private String client_id = null;
+	private String redirect_uri = null;
+	
+	
 	// Basic Protocols (Endpunkte)
 	private static final String TENANT_COMMON_PROTOCOL = "https://login.microsoftonline.com/common/oauth2/v2.0/";
 	private static final String TENANT_ORGANIZATIONS_PROTOCOL = "https://login.microsoftonline.com/organizations/oauth2/v2.0/";
@@ -68,6 +85,92 @@ public class OneDriveUtilities
 	private String fullToken;
 	
 	public static final JsonFactory jsonFactory = new JsonFactory();
+
+	/*
+	 * 
+	 */
+	public void requestToken() throws IOException, URISyntaxException 
+	{
+		StringBuilder scope = new StringBuilder();
+		for (String s : scopes) scope.append("%20").append(s);
+
+		String url = String
+				.format("%s/authorize?client_id=%s&scope=%s&response_type=code&redirect_uri=%s",
+						AUTH_URL, client_id, scope.toString(), redirect_uri)
+				.replace(" ", "%20");
+		
+		
+		Desktop.getDesktop().browse(new URI(url));
+		
+	}
+
+
+	/*
+	 * 
+	 */
+	public void requestAuth() throws IOException, URISyntaxException 
+	{
+		StringBuilder scope = new StringBuilder();
+		for (String s : scopes) scope.append("%20").append(s);
+
+		String url = String
+				.format("%s/authorize?client_id=%s&scope=%s&response_type=code&redirect_uri=%s",
+						AUTH_URL, 
+						client_id, 
+						scope.toString(), 
+						redirect_uri)
+				.replace(" ", "%20");
+				
+		Desktop.getDesktop().browse(new URI(url));		
+	}
+	
+	/*
+	 * 
+	 */
+	public String getCode() 
+	{
+		StringBuilder scope = new StringBuilder();
+		for (String s : scopes) scope.append("%20").append(s);
+
+		String url = String
+				.format("%s/authorize?client_id=%s&scope=%s&response_type=code&redirect_uri=%s",
+						AUTH_URL, client_id, scope.toString(), redirect_uri)
+				.replace(" ", "%20");
+
+		Semaphore answerLock = new Semaphore(1);
+
+		AuthServer server = new AuthServer(answerLock);
+		server.start();
+
+		try {
+			Desktop.getDesktop().browse(new URI(url));
+		}
+		catch (URISyntaxException e) {
+			throw new InternalException(
+					"Fail to create URI object. probably wrong url on SDK code, contact the author", e);
+		}
+		catch (IOException e) {
+			throw new UnsupportedOperationException("Can not find default browser for authentication.", e);
+		}
+
+		try {
+			answerLock.acquire();
+		}
+		catch (InterruptedException e) {
+			// FIXME: custom exception
+			throw new RuntimeException(SyncRequest.NETWORK_ERR_MSG + " Lock Error In " + this.getClass().getName());
+		}
+
+		String code = server.close();
+		answerLock.release();
+
+		if (code == null) {
+			// FIXME: custom exception
+			throw new RuntimeException(SyncRequest.NETWORK_ERR_MSG);
+		}
+
+		return code;
+	}
 	
 	/*
 	 * 
@@ -93,6 +196,8 @@ public class OneDriveUtilities
 		return authInfo.getAccessToken();
 	}
 	
+	TrustManager m;
+	
 	/*
 	 * 
 	 */
@@ -116,6 +221,9 @@ public class OneDriveUtilities
 		}
 	}
 	
+	/*
+	 * 
+	 */
 	public static void authorizationRequest() throws IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException
 	{
 		HttpClient httpClient = createTrustAllHttpClientBuilder().build();
@@ -194,7 +302,45 @@ public class OneDriveUtilities
 		redirectURI = StringUtils.replace(redirectURI,":","%3A");
 		return redirectURI;
 	}
+
+	public void setScopes(String[] scopes)
+	{
+		this.scopes = scopes;
+	}
+
+	public void setRedirect_uri(String redirect_uri)
+	{
+		this.redirect_uri = redirect_uri;
+	}
+
+	public void setClient_id(String client_id)
+	{
+		this.client_id = client_id;
+	}
 	
+	public void setAuth_url(String auth_url)
+	{
+		this.auth_url = auth_url;
+	}
+
+	/* 
+	 * DriveOne laden
+	 */
+	public static OneDrive loadOneDriveInfo()
+	{
+		ECPProject ecpProject = Activator.getTeamECPProject();
+		if(ecpProject != null)
+		{
+			EList<Object>teamObjects = ecpProject.getContents();
+			for(Object teamObj : teamObjects)
+			{
+				if (teamObj instanceof OneDrive)
+					return (OneDrive) teamObj;
+			}			
+		}
+		
+		return null;
+	}
 	
 	
 }

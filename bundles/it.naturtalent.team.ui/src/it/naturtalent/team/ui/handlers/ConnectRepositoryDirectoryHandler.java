@@ -1,26 +1,28 @@
  
 package it.naturtalent.team.ui.handlers;
 
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
+
+import javax.inject.Named;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
-
-import hk.quantr.sharepoint.SPOnline;
-import it.naturtalent.team.ui.OneDriveUtilities;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.emf.ecp.core.util.ECPUtil;
+import org.eclipse.emf.ecp.spi.ui.util.ECPHandlerHelper;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Shell;
+import it.naturtalent.team.ui.Activator;
+import it.naturtalent.team.ui.OneDriveHelper;
+import it.naturtalent.team.ui.wizards.OneDriveWizard;
 
 public class ConnectRepositoryDirectoryHandler
 {
@@ -46,13 +48,35 @@ public class ConnectRepositoryDirectoryHandler
 	private static final String SCOPE_FILES_READ_WRITE_ALL = "files.readwrite.all";
 	
 	@Execute
-	public void execute()
+	public void execute(IEclipseContext context, @Named (IServiceConstants.ACTIVE_SHELL) Shell shell)
 	{
-
+		
+		// OneDrive Wizard starten
+		OneDriveWizard oneDriveWizard = ContextInjectionFactory.make(OneDriveWizard.class, context);
+		WizardDialog dialog = new WizardDialog(shell, oneDriveWizard);
+		dialog.open();
+		
+		//doGetCode();
 		//String url = getAuthorizationURL(null, null, null);
 		//String url = OneDriveUtilities.getTokenRequestURL();
+		//System.out.println(url);
+	}
+
+	private void doGetCode()
+	{
+		OneDriveHelper helper = new OneDriveHelper();
+		String [] scopes = new String [] {"offline_access", "files.readwrite.all"};
+		helper.setScopes(scopes);
+		helper.setClient_id(CLIENT_ID);
+		helper.setRedirect_uri("https://login.microsoftonline.com/common/oauth2/nativeclient");
+		
+		String code =  helper.getCode();
+	}
+		
+	private void doGetToken()
+	{
 		try
-		{
+		{		
 			String client_id = CLIENT_ID;
 			String grant_type = "authorization_code";
 			String scope = "user.read";
@@ -61,22 +85,18 @@ public class ConnectRepositoryDirectoryHandler
 			
 			String httpBody = String.format("client_id=%s&grant_type=%s&scope=%s&code=%s&redirect_uri=%s",
 					client_id, grant_type, scope, code, redirect_uri);
-			System.out.println(httpBody);
+			//System.out.println(httpBody);
 			
-			OneDriveUtilities helper = new OneDriveUtilities();
+			OneDriveHelper helper = new OneDriveHelper();
 			String token = helper.getToken(httpBody);
 			
-			
-			//Desktop.getDesktop().browse(new URI("https://login.microsoftonline.com/common/oauth2/v2.0/"));
-			
-			//OneDriveUtilities.authorizationRequest();
 		} catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		//System.out.println(url);
+		}	
 	}
+
 	
 	private String getAuthorizationURL(String clientID, String scope, String responsetype)
 	{

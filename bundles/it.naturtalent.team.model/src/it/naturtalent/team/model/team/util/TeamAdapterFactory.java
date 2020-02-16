@@ -90,6 +90,11 @@ public class TeamAdapterFactory extends AdapterFactoryImpl
 				return createLoginAdapter();
 			}
 			@Override
+			public Adapter caseOneDrive(OneDrive object)
+			{
+				return createOneDriveAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object)
 			{
 				return createEObjectAdapter();
@@ -152,6 +157,21 @@ public class TeamAdapterFactory extends AdapterFactoryImpl
 	 * @generated
 	 */
 	public Adapter createLoginAdapter()
+	{
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link it.naturtalent.team.model.team.OneDrive <em>One Drive</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see it.naturtalent.team.model.team.OneDrive
+	 * @generated
+	 */
+	public Adapter createOneDriveAdapter()
 	{
 		return null;
 	}

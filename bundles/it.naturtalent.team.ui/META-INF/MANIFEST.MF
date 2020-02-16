@@ -53,8 +53,11 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.0.v2018042
  org.eclipse.emf.databinding,
  org.eclipse.emf.ecp.edit.swt,
  org.eclipse.emf.edit,
- org.eclipse.e4.ui.di
+ org.eclipse.e4.ui.di,
+ org.eclipse.emf.ecp.core,
+ org.eclipse.emf.ecp.ui
 Import-Package: it.naturtalent.e4.project.model.project,
+ it.naturtalent.emf.model.modified,
  javax.annotation;version="1.0.0";resolution:=optional,
  javax.inject;version="1.0.0"
 Automatic-Module-Name: it.naturtalent.team.ui

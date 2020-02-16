@@ -67,6 +67,7 @@ public class TeamFactoryImpl extends EFactoryImpl implements TeamFactory
 			case TeamPackage.REPOS_DATA: return createReposData();
 			case TeamPackage.BRANCH: return createBranch();
 			case TeamPackage.LOGIN: return createLogin();
+			case TeamPackage.ONE_DRIVE: return createOneDrive();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -106,6 +107,18 @@ public class TeamFactoryImpl extends EFactoryImpl implements TeamFactory
 	{
 		LoginImpl login = new LoginImpl();
 		return login;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public OneDrive createOneDrive()
+	{
+		OneDriveImpl oneDrive = new OneDriveImpl();
+		return oneDrive;
 	}
 
 	/**

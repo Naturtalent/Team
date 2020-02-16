@@ -14,6 +14,20 @@
     </genClasses>
     <genClasses ecoreClass="team.ecore#//Branch">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//Branch/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//Branch/id"/>
+    </genClasses>
+    <genClasses ecoreClass="team.ecore#//Login">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//Login/User"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//Login/Password"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//Login/Domain"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//Login/URL"/>
+    </genClasses>
+    <genClasses ecoreClass="team.ecore#//OneDrive">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//OneDrive/clientID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//OneDrive/authURL"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//OneDrive/redirectURI"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//OneDrive/authCode"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute team.ecore#//OneDrive/accessToken"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

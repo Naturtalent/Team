@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.emf.ecp.view.model:View xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:org.eclipse.emf.ecp.view.model="http://org/eclipse/emf/ecp/view/model/1180" xmi:id="_s04ykFCfEeqYfoYwAtx97g" name="OneDrive">
+  <rootEClass href="http://it.naturtalent/team#//OneDrive"/>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_s1AHUFCfEeqYfoYwAtx97g" name="Control clientID">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_s1AHUVCfEeqYfoYwAtx97g">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/clientID"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_s1AHUlCfEeqYfoYwAtx97g" name="Control authURL">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_s1AHU1CfEeqYfoYwAtx97g">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/authURL"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_s1AHVFCfEeqYfoYwAtx97g" name="Control redirectURI">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_s1AHVVCfEeqYfoYwAtx97g">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/redirectURI"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_s1AHVlCfEeqYfoYwAtx97g" name="Control authCode">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_s1AHV1CfEeqYfoYwAtx97g">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/authCode"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_s1AHWFCfEeqYfoYwAtx97g" name="Control accessToken">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_s1AHWVCfEeqYfoYwAtx97g">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/accessToken"/>
+    </domainModelReference>
+  </children>
+  <ecorePaths>/it.naturtalent.team.model/model/team.ecore</ecorePaths>
+</org.eclipse.emf.ecp.view.model:View>

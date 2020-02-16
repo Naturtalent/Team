@@ -3,6 +3,16 @@
 <plugin>
    <extension
          point="org.eclipse.emf.ecp.view.model.provider.xmi.file">
+<file filePath="viewmodels/OneDriveToken.view"/>
+
+<file
+      filePath="viewmodels/OneDriveAuth.view">
+   <filter
+         key="requestAuthKey"
+         value="requestAuthFilter">
+   </filter>
+</file>
+
 <file filePath="viewmodels/ReposData.view"/>
 
    </extension>

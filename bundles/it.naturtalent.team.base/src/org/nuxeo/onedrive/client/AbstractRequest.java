@@ -27,9 +27,16 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 
 /**
  * @since 1.0
@@ -123,6 +130,26 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
     public R send() throws OneDriveAPIException {
         HttpURLConnection connection = createConnection();
 
+        // eingefuegt
+		try
+		{
+
+		TrustManager[] trustAllCerts = new TrustManager[]
+				{ new DummyX509TrustManager() };
+		
+		SSLContext ctx = SSLContext.getInstance("TLS"); //$NON-NLS-1$		
+		ctx.init(null, trustAllCerts, null);		
+		((HttpsURLConnection)connection).setSSLSocketFactory(ctx.getSocketFactory());
+		
+		
+		} catch (Exception e)
+		{
+			// FIXME: custom exception
+			e.printStackTrace();
+		}
+		
+        //
+        
         connection.setRequestProperty("User-Agent", USER_AGENT);
         if (api != null) {
             connection.addRequestProperty("Authorization", "Bearer " + api.getAccessToken());
@@ -226,5 +253,27 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
         }
 
     }
+    
+	private static class DummyX509TrustManager implements X509TrustManager
+	{
+		@Override
+		public X509Certificate[] getAcceptedIssuers()
+		{
+			return null;
+		}
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] certs, String authType)
+		{
+			// no check
+		}
+
+		@Override
+		public void checkServerTrusted(X509Certificate[] certs, String authType)
+		{
+			// no check
+		}
+	}
+	
 
 }

@@ -15,9 +15,22 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.HttpConnection;
+
 
 /**
  * @author <a href="mailto:bh322yoo@gmail.com" target="_top">isac322</a>
@@ -35,6 +48,18 @@ public class SyncRequest
 		{
 			URL url1 = new URL(url);
 			httpConnection = (HttpURLConnection) url1.openConnection();
+
+			TrustManager[] trustAllCerts = new TrustManager[]
+					{ new DummyX509TrustManager() };
+
+			SSLContext ctx = SSLContext.getInstance("TLS"); //$NON-NLS-1$
+			ctx.init(null, trustAllCerts, null);
+			
+			((HttpsURLConnection)httpConnection).setSSLSocketFactory(ctx.getSocketFactory());
+			
+			//httpConnection.usingProxy();
+			
+			
 		} catch (Exception e)
 		{
 			// FIXME: custom exception
@@ -47,7 +72,17 @@ public class SyncRequest
 		try
 		{
 			httpConnection = (HttpURLConnection) url.openConnection();
-		} catch (IOException e)
+			
+			TrustManager[] trustAllCerts = new TrustManager[]
+					{ new DummyX509TrustManager() };
+
+			SSLContext ctx = SSLContext.getInstance("TLS"); //$NON-NLS-1$
+			ctx.init(null, trustAllCerts, null);
+			
+			((HttpsURLConnection)httpConnection).setSSLSocketFactory(ctx.getSocketFactory());
+
+			
+		} catch (Exception e)
 		{
 			// FIXME: custom exception
 			throw new RuntimeException(NETWORK_ERR_MSG, e);
@@ -265,4 +300,27 @@ public class SyncRequest
 			httpConnection.disconnect();
 		}
 	}
+
+	private static class DummyX509TrustManager implements X509TrustManager
+	{
+		@Override
+		public X509Certificate[] getAcceptedIssuers()
+		{
+			return null;
+		}
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] certs, String authType)
+		{
+			// no check
+		}
+
+		@Override
+		public void checkServerTrusted(X509Certificate[] certs, String authType)
+		{
+			// no check
+		}
+	}
+	
+
 }

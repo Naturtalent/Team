@@ -149,6 +149,31 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link it.naturtalent.team.model.team.OneDrive} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected OneDriveItemProvider oneDriveItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link it.naturtalent.team.model.team.OneDrive}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createOneDriveAdapter()
+	{
+		if (oneDriveItemProvider == null)
+		{
+			oneDriveItemProvider = new OneDriveItemProvider(this);
+		}
+
+		return oneDriveItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -268,6 +293,7 @@ public class TeamItemProviderAdapterFactory extends TeamAdapterFactory implement
 		if (reposDataItemProvider != null) reposDataItemProvider.dispose();
 		if (branchItemProvider != null) branchItemProvider.dispose();
 		if (loginItemProvider != null) loginItemProvider.dispose();
+		if (oneDriveItemProvider != null) oneDriveItemProvider.dispose();
 	}
 
 }

@@ -11,6 +11,7 @@
 			<unit id="org.eclipse.rcp.feature.group" version="4.12.0.v20190605-1801"/>
 			<unit id="org.eclipse.rcp.source.feature.group" version="4.12.0.v20190605-1801"/>
 			<unit id="org.eclipse.sdk.feature.group" version="4.12.0.v20190605-1801"/>
+			<unit id="org.eclipse.equinox.server.jetty.feature.group" version="1.9.0.v20190516-1504"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="http://download.eclipse.org/modeling/emf/cdo/updates/releases"/>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.emf.ecp.view.model:View xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:org.eclipse.emf.ecp.view.model="http://org/eclipse/emf/ecp/view/model/1180" xmi:id="_3kZJ0E_9EeqWZo0QqijLMA" name="OneDrive">
+  <rootEClass href="http://it.naturtalent/team#//OneDrive"/>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_3knzUE_9EeqWZo0QqijLMA" name="Control clientID">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_3knzUU_9EeqWZo0QqijLMA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/clientID"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_3knzUk_9EeqWZo0QqijLMA" name="Control authURL">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_3knzU0_9EeqWZo0QqijLMA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/authURL"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="_3knzVE_9EeqWZo0QqijLMA" name="Control redirectURI">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_3knzVU_9EeqWZo0QqijLMA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/redirectURI"/>
+    </domainModelReference>
+  </children>
+  <children xsi:type="org.eclipse.emf.ecp.view.model:Control" xmi:id="__hhWoFA4EeqWZo0QqijLMA" name="Control authCode">
+    <domainModelReference xsi:type="org.eclipse.emf.ecp.view.model:FeaturePathDomainModelReference" xmi:id="_E6DhkFA5EeqWZo0QqijLMA">
+      <domainModelEFeature xsi:type="ecore:EAttribute" href="http://it.naturtalent/team#//OneDrive/authCode"/>
+    </domainModelReference>
+  </children>
+  <ecorePaths>/it.naturtalent.team.model/model/team.ecore</ecorePaths>
+</org.eclipse.emf.ecp.view.model:View>

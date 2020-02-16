@@ -4,6 +4,7 @@ package it.naturtalent.team.model.team.impl;
 
 import it.naturtalent.team.model.team.Branch;
 import it.naturtalent.team.model.team.Login;
+import it.naturtalent.team.model.team.OneDrive;
 import it.naturtalent.team.model.team.ReposData;
 import it.naturtalent.team.model.team.TeamFactory;
 import it.naturtalent.team.model.team.TeamPackage;
@@ -43,6 +44,13 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * @generated
 	 */
 	private EClass loginEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass oneDriveEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -245,6 +253,72 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 	 * @generated
 	 */
 	@Override
+	public EClass getOneDrive()
+	{
+		return oneDriveEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getOneDrive_ClientID()
+	{
+		return (EAttribute)oneDriveEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getOneDrive_AuthURL()
+	{
+		return (EAttribute)oneDriveEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getOneDrive_RedirectURI()
+	{
+		return (EAttribute)oneDriveEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getOneDrive_AuthCode()
+	{
+		return (EAttribute)oneDriveEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getOneDrive_AccessToken()
+	{
+		return (EAttribute)oneDriveEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public TeamFactory getTeamFactory()
 	{
 		return (TeamFactory)getEFactoryInstance();
@@ -284,6 +358,13 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 		createEAttribute(loginEClass, LOGIN__PASSWORD);
 		createEAttribute(loginEClass, LOGIN__DOMAIN);
 		createEAttribute(loginEClass, LOGIN__URL);
+
+		oneDriveEClass = createEClass(ONE_DRIVE);
+		createEAttribute(oneDriveEClass, ONE_DRIVE__CLIENT_ID);
+		createEAttribute(oneDriveEClass, ONE_DRIVE__AUTH_URL);
+		createEAttribute(oneDriveEClass, ONE_DRIVE__REDIRECT_URI);
+		createEAttribute(oneDriveEClass, ONE_DRIVE__AUTH_CODE);
+		createEAttribute(oneDriveEClass, ONE_DRIVE__ACCESS_TOKEN);
 	}
 
 	/**
@@ -331,6 +412,13 @@ public class TeamPackageImpl extends EPackageImpl implements TeamPackage
 		initEAttribute(getLogin_Password(), ecorePackage.getEString(), "Password", null, 0, 1, Login.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getLogin_Domain(), ecorePackage.getEString(), "Domain", null, 0, 1, Login.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getLogin_URL(), ecorePackage.getEString(), "URL", null, 0, 1, Login.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(oneDriveEClass, OneDrive.class, "OneDrive", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getOneDrive_ClientID(), ecorePackage.getEString(), "clientID", null, 0, 1, OneDrive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getOneDrive_AuthURL(), ecorePackage.getEString(), "authURL", null, 0, 1, OneDrive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getOneDrive_RedirectURI(), ecorePackage.getEString(), "redirectURI", null, 0, 1, OneDrive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getOneDrive_AuthCode(), ecorePackage.getEString(), "authCode", null, 0, 1, OneDrive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getOneDrive_AccessToken(), ecorePackage.getEString(), "accessToken", null, 0, 1, OneDrive.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

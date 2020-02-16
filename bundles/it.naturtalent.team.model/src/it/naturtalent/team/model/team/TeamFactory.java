@@ -50,6 +50,15 @@ public interface TeamFactory extends EFactory
 	Login createLogin();
 
 	/**
+	 * Returns a new object of class '<em>One Drive</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>One Drive</em>'.
+	 * @generated
+	 */
+	OneDrive createOneDrive();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
