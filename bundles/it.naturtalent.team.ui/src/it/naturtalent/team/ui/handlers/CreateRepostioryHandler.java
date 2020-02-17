@@ -47,14 +47,17 @@ public class CreateRepostioryHandler
 	{
 		// die Ausfuehrung erfolgt ueber einen Dialg
 		CreateRepositoryDialog dialog = new CreateRepositoryDialog(shell);
-		if (dialog.open() == CreateRepositoryDialog.OK)
-		{
+	//	if (dialog.open() == CreateRepositoryDialog.OK)
+		//{
 			
 			OneDrive oneDrive = OneDriveHelper.loadOneDriveInfo();
 			String token = oneDrive.getAccessToken();
-						
-			//OneDriveAPI api = new OneDriveBusinessAPI(url, token);
-			OneDriveAPI api = new OneDriveBasicAPI(token);
+			
+			String url = "https://telekom-my.sharepoint.de/personal/dieter_apel_telekom_de/_layouts/15/onedrive.aspx?";
+			//String id = "%2Fpersonal%2Fdieter%5Fapel%5Ftelekom%5Fde%2FDocuments%2Ftestuwe";
+			token = "A682055";
+			OneDriveAPI api = new OneDriveBusinessAPI(url, token);
+			//OneDriveAPI api = new OneDriveBasicAPI(url);
 			
 			OneDriveFolder root = OneDriveFolder.getRoot(api);
 			OneDriveFolder folder = new OneDriveFolder(api, "testuwe");
@@ -92,7 +95,11 @@ public class CreateRepostioryHandler
 			}
 			*/
 
-		}
+		//}
+		
+		
+		
+		
 	}
 	
 	private List<String> getChildren(OneDriveFolder folder)
