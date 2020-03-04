@@ -11,6 +11,10 @@ Bundle-ClassPath: .,
 Require-Bundle: org.eclipse.jgit,
  org.eclipse.equinox.registry,
  org.eclipse.core.resources,
- it.wp.common.io
+ it.wp.common.io,
+ it.naturtalent.e4.project,
+ org.eclipse.swt,
+ it.naturtalent.icons,
+ org.eclipse.jface
 Export-Package: it.naturtalent.team.base,
  org.nuxeo.onedrive.client

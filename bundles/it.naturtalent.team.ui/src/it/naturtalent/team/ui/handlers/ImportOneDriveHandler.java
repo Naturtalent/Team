@@ -4,9 +4,12 @@ package it.naturtalent.team.ui.handlers;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkingSet;
 
+import it.naturtalent.e4.project.expimp.dialogs.ProjectImportDialog;
 import it.naturtalent.team.ui.OneDriveUtils;
+import it.naturtalent.team.ui.dialogs.ProjectOneDriveImport;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,11 +24,20 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 public class ImportOneDriveHandler
 {
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional IAdaptable iAdaptable)
+	public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional IAdaptable iAdaptable, 
+			@Named(IServiceConstants.ACTIVE_SHELL) @Optional Shell shell)
 	{
+		
 		File oneDriveExpDir = OneDriveUtils.getOneDriveExpImpDir();
 		
-		openImportDir(oneDriveExpDir.getPath());
+		ProjectOneDriveImport dialog = new ProjectOneDriveImport(shell);
+		dialog.create();
+		dialog.initViewer(oneDriveExpDir.getPath());
+		
+		dialog.open();
+		
+		
+		//openImportDir(oneDriveExpDir.getPath());
 		
 	}
 	

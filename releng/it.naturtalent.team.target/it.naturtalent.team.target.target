@@ -52,12 +52,12 @@
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="http://download.eclipse.org/egit/updates"/>
-			<unit id="org.eclipse.jgit.feature.group" version="5.6.0.201912101111-r"/>
-			<unit id="org.eclipse.jgit.http.apache.feature.group" version="5.6.0.201912101111-r"/>
-			<unit id="org.eclipse.jgit.lfs.feature.group" version="5.6.0.201912101111-r"/>
-			<unit id="org.eclipse.jgit.pgm.feature.group" version="5.6.0.201912101111-r"/>
-			<unit id="org.eclipse.jgit.source.feature.group" version="5.6.0.201912101111-r"/>
-			<unit id="org.eclipse.jgit.ssh.apache.feature.group" version="5.6.0.201912101111-r"/>
+			<unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.jgit.http.apache.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.jgit.lfs.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.jgit.pgm.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.jgit.source.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.jgit.ssh.apache.feature.group" version="0.0.0"/>
 		</location>
 	</locations>
 </target>

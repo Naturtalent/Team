@@ -20,6 +20,8 @@
         <children xsi:type="menu:DirectToolItem" xmi:id="_aCauQE4mEemI6IeZ4DeTiw" elementId="it.naturtalent.team.ui.directtoolitem.refresh" label="Login" iconURI="icon://COMMAND_REFRESH_GIT" tooltip="View aktualisieren" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.RefreshHandler"/>
         <children xsi:type="menu:DirectToolItem" xmi:id="_xTaoME4pEemI6IeZ4DeTiw" elementId="it.naturtalent.team.ui.directtoolitem.createRepository" label="CreateRepository" iconURI="icon://COMMAND_CREATE_REPOSITORY" tooltip="ein Repository erzeugen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.CreateRepostioryHandler"/>
         <children xsi:type="menu:DirectToolItem" xmi:id="__cylwExVEeqYr4zHhCiutw" elementId="it.naturtalent.team.ui.directtoolitem.ConnectRepository" label="ConnectRepository" iconURI="icon://COMMAND_CONNECT" tooltip="mit einerm Repositoryverzeichnis verbinden" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.ConnectRepositoryDirectoryHandler"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_OnhDoF5WEeqbF6co15IBQQ" elementId="it.naturtalent.team.ui.toolbarseparator.0"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_RS9WMF5WEeqbF6co15IBQQ" elementId="it.naturtalent.team.ui.directtoolitem.openCloudTransfer" label="Cloudtransferverzeichnis &#xf6;ffnen" iconURI="icon://MENU_OPEN" tooltip="Cloudtransferverzeichnis im Browser &#xf6;ffnen" contributionURI="bundleclass://it.naturtalent.team.ui/it.naturtalent.team.ui.handlers.OpenCloudTransferHandler"/>
       </toolbar>
     </elements>
   </fragments>
