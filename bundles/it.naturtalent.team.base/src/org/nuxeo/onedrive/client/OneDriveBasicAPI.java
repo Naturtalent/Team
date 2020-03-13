@@ -23,7 +23,8 @@ package org.nuxeo.onedrive.client;
  */
 public class OneDriveBasicAPI extends AbstractOneDriveAPI {
 
-    private static final String BASE_URL = "https://api.onedrive.com/v1.0";
+    //private static final String BASE_URL = "https://api.onedrive.com/v1.0";
+	private static final String BASE_URL = "https://login.microsoftonline.com/common/oauth2/v2.0";
 
     private static final String EMAIL_URL = "https://apis.live.net/v5.0/me";
 

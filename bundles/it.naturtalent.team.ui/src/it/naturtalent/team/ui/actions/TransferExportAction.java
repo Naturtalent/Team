@@ -38,13 +38,18 @@ import it.naturtalent.e4.project.ui.datatransfer.RefreshResourcesOperation;
 import it.naturtalent.e4.project.ui.emf.ExportProjectPropertiesOperation;
 import it.naturtalent.team.ui.OneDriveUtils;
 import it.naturtalent.team.ui.dialogs.ProjectOneDriveExport;
+import it.naturtalent.team.ui.handlers.OpenCloudTransferHandler;
 
+/**
+ * Mit dieser Aktion koennen Projekte in ein Transferverzeichnis exportiert werden. 
+ * 
+ * @author dieter
+ *
+ */
 public class TransferExportAction extends ExportAction
 {
 	private INtProjectPropertyFactoryRepository projektDataFactoryRepository;
 	private Shell shell;
-	
-	
 	
 	@PostConstruct
 	public void postConstruct(UISynchronize sync,
@@ -122,10 +127,15 @@ public class TransferExportAction extends ExportAction
 					exportIProject(exportDestDir, iProject);
 				}
 			}
+
+			MessageDialog.openInformation(null, "Export", //$NON-NLS-1$
+					"Projekte wurde in das selektierte Transfervrzeichnis kopiert\nund kann in OneDrive gezogen werden  " //$NON-NLS-1$
+							+ exportDestDir);
+
+			OpenCloudTransferHandler openTransferDirHandler = new OpenCloudTransferHandler();
+			openTransferDirHandler.execute();
 			
 		}
-		
-		//super.run();
 	}
 	
 	private void exportIProject(File exportDestDir, IProject iProject)
@@ -190,39 +200,6 @@ public class TransferExportAction extends ExportAction
 			exportResource.export(shell, iResources, exportDestDir.getPath(),
 					false);
 		}
-		
-		
-
-		/*
-		String destPath = exportDestDir.getPath();
-		try
-		{
-			if (SystemUtils.IS_OS_LINUX)
-				Runtime.getRuntime().exec("nautilus " + destPath);
-			else
-				Runtime.getRuntime().exec("explorer " + destPath);
-		} catch (IOException exp)
-		{
-			if (SystemUtils.IS_OS_LINUX)
-				try
-				{
-					Runtime.getRuntime().exec("nemo " + destPath);
-					return;
-				} catch (Exception e1)
-				{
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-			exp.printStackTrace();
-
-		}
-		*/
-
-		MessageDialog.openInformation(null, "Export", //$NON-NLS-1$
-				"Projekte wurde in das selektierte Transfervrzeichnis kopiert\nund kann in OneDrive gezogen werden  " //$NON-NLS-1$
-						+ exportDestDir);
-
 	}
 
 	

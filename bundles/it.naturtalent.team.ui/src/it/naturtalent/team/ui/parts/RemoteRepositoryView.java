@@ -69,17 +69,19 @@ public class RemoteRepositoryView
 		reposData = (ReposData) EcoreUtil.create(reposClass);
 		reposData.setName("Remote Repository");
 	
+		/*
 		try
 		{
 			ECPSWTView view = ECPSWTViewRenderer.INSTANCE.render(parent, reposData);			
 			viewModelContext = view.getViewModelContext();
 		}
-
+		
 		catch (ECPRendererException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	
+		}
+		*/	
 
 
 

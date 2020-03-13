@@ -57,7 +57,7 @@ public class OneDriveHelper
 {
 
 	// Ergebnisse der Registrierung (Azur) und Au­to­ri­sie­rung, hardcoded fuer Tests
-	private static final String CLIENT_ID = "ecbfdf6a-ebc2-4727-9cb1-3b3b347f1391";
+	private static final String CLIENT_ID = "ecbfdf6a-ebc2-4727-9cb1-3b3b347f1391"; // in MS-Azure fuer Gabi registriert
 	private static final String NATIVECLIENT_CODE = "Maadf061a-5412-ce08-fe75-4eb87642b23e";
 
 	private static final String AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0";
